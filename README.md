@@ -33,6 +33,5 @@ FROM oconnormi/ddf-base
 ENV APP_BASE=<app_base>
 ENV APP_HOME=<app_home>
 ...
-
-ENTRYPOINT ["/bin/bash", "-c", "$ENTRYPOINT_HOME/entrypoint.sh"]
+# Install application
 ```
