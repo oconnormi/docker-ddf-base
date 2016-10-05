@@ -16,4 +16,4 @@ if [ -e "${ENTRYPOINT_HOME}/post_start.sh" ]; then
   chmod 755 ${ENTRYPOINT_HOME}/post_start.sh && ${ENTRYPOINT_HOME}/post_start.sh
 fi
 
-tail -f $APP_HOME/data/log/ddf.log
+tail -f $APP_LOG

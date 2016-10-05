@@ -21,6 +21,7 @@ Base level docker image containing all dependencies for DDF
 Any upstream containers must provide environment variables for:
 * APP_BASE
 * APP_HOME
+* APP_LOG
 
 ## Usage
 
