@@ -7,7 +7,7 @@ else
 fi
 
 echo "External Hostname: ${_app_hostname}"
-echo "Updating ddf certificates"
+echo "Updating ${APP_NAME} certificates"
 
 echo "APP_HOME: ${APP_HOME}"
 
@@ -17,7 +17,7 @@ cd $APP_HOME/etc/certs
 
 $APP_HOME/etc/certs/CertNew.sh -cn $_app_hostname
 
-cd - 
+cd -
 
 sed -i "s/localhost/$_app_hostname/" $APP_HOME/etc/system.properties
 
@@ -28,11 +28,11 @@ sed -i "s/localhost/$_app_hostname/g" $APP_HOME/etc/users.attributes
 sed -i "s/localhost/localhost\ ${_app_hostname}/" /etc/hosts
 
 if [ -d "$ENTRYPOINT_HOME/pre" ]; then
-  for f in "$ENTRYPOINT_HOME/pre/*.sh";
+  for f in "$ENTRYPOINT_HOME/pre/*";
     do
-      [ -d $f ] && chmod 755 $f \
-      && echo "Running additional pre_start configuration: $f" \
-      && $f
+      chmod 755 $f
+      echo "Running additional pre_start configuration: $f"
+      $f
     done;
 fi
 

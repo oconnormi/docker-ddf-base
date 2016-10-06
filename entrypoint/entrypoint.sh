@@ -5,7 +5,7 @@ if [ -e "${ENTRYPOINT_HOME}/pre_start.sh" ]; then
   chmod 755 ${ENTRYPOINT_HOME}/pre_start.sh && ${ENTRYPOINT_HOME}/pre_start.sh
 fi
 
-echo "Starting DDF"
+echo "Starting ${APP_NAME}"
 
 $APP_HOME/bin/start
 

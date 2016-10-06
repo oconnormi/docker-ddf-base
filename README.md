@@ -19,9 +19,10 @@ Base level docker image containing all dependencies for DDF
 ## Requirements
 
 Any upstream containers must provide environment variables for:
-* APP_BASE
-* APP_HOME
-* APP_LOG
+
+* APP_NAME - Name of application, used for branding by the entrypoint
+* APP_HOME - Home Directory for application installation (should have a bin directory as a child)
+* APP_LOG - Location of the application log file
 
 ## Usage
 
@@ -31,8 +32,9 @@ It packages the dependencies and an entrypoint script for use with any ddf based
 ```Dockerfile
 FROM oconnormi/ddf-base
 
-ENV APP_BASE=<app_base>
+ENV APP_NAME=<app_name>
 ENV APP_HOME=<app_home>
+ENV APP_LOG=<log_file>
 ...
 # Install application
 ```
