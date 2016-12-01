@@ -25,7 +25,7 @@ sed -i "s/localhost/localhost\ ${_app_hostname}/" /etc/hosts
 
 if [ -n "$SOLR_ZK_HOSTS" ]; then
   echo "Solr Cloud Support is enabled, zkhosts: $SOLR_ZK_HOSTS"
-  sed -i '/Solr client configuration/a solr.client = CloudSolrClient' $APP_HOME/etc/system.properties
+  sed -i 's/solr.client = HttpSolrClient/solr.client = CloudSolrClient/' $APP_HOME/etc/system.properties
   sed -i "/solr.client = CloudSolrClient/a solr.cloud.zookeeper=$SOLR_ZK_HOSTS" $APP_HOME/etc/system.properties
   sed -i 's/solr.http.url/#solr.http.url/g' $APP_HOME/etc/system.properties
   sed -i 's/solr.data.dir/#solr.data.dir/g' $APP_HOME/etc/system.properties
