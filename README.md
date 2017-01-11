@@ -8,12 +8,18 @@ Base level docker image containing all dependencies for DDF
 * Common Entrypoint for all ddf based applications
   * Customize by adding scripts to `$ENTRYPOINT_HOME/pre/` and `$ENTRYPOINT_HOME/post/`
   * Runtime customization by mounting scripts to `$ENTRYPOINT_HOME/pre_start_custom.sh` and `$ENTRYPOINT_HOME/post_start_custom.sh`
-  * Supports setting External hostname via setting ``$APP_HOSTNAME=<external_hostname>``
+  * Supports setting External hostname via setting `APP_HOSTNAME=<external_hostname>`
     * Generates keystores
     * Adds to loopback adaptor
     * updates `$APP_HOME/etc/users.properties`
     * updates `$APP_HOME/etc/users.attributes`
     * updates hostname in `$APP_HOME/etc/system.properties`
+  * Supports External solr via `SOLR_URL=<external_solr_url>`
+  * Supports Solr Cloud via `SOLR_ZK_HOSTS=<zookeeper_hosts_list>`
+  * Supports Clustering via `NODE_NAME=<node_name>`
+    * NodeName is used to identify the node within the cluster, useful for loadbalancing
+  * Feature installation via `INSTALL_FEATURES=<feature1>;<feature2>;...`
+  * Feature uninstallation via `UNINSTALL_FEATURES=<feature1>;<feature2>;...`
 
 
 ## Requirements
