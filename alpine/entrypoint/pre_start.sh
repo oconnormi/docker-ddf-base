@@ -47,6 +47,24 @@ if [ -n "$NODE_NAME" ]; then
   props set org.apache.ws.security.crypto.merlin.x509crl.file '${org.codice.ddf.system.x509crl}' $APP_HOME/etc/ws-security/server/encryption.properties
 fi
 
+if [ -n "$STARTUP_APPS" ]; then
+  echo "Configuring startup apps"
+  if [[ $STARTUP_APPS == *";"* ]]; then
+  _appCount=$[$(echo $STARTUP_APPS | grep -o ";" | wc -l) + 1]
+  else
+    _appCount=1
+  fi
+
+  echo "Adding $_appCount startup apps"
+
+  for (( i=1; i<=$_appCount; i++ ))
+  do
+    _currentApp=$(echo $STARTUP_APPS | cut -d ";" -f $i)
+    echo "Adding: $_currentApp"
+    props set $_currentApp '' $APP_HOME/etc/org.codice.ddf.admin.applicationlist.properties
+  done
+fi
+
 if [ -d "$ENTRYPOINT_HOME/pre" ]; then
   for f in "$ENTRYPOINT_HOME/pre/*";
     do

@@ -20,6 +20,7 @@ Base level docker image containing all dependencies for DDF
     * NodeName is used to identify the node within the cluster, useful for loadbalancing
   * Feature installation via `INSTALL_FEATURES=<feature1>;<feature2>;...`
   * Feature uninstallation via `UNINSTALL_FEATURES=<feature1>;<feature2>;...`
+  * Startup apps via `STARTUP_APPS=<app1>;<app2>;...`
 
 
 ## Requirements
