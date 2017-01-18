@@ -1,17 +1,14 @@
 #!/bin/bash
 
+# Determine app hostname
 if [ -n "$APP_HOSTNAME" ]; then
   _app_hostname=$APP_HOSTNAME
 else
   _app_hostname=$(hostname -f)
 fi
 
-echo "External Hostname: ${_app_hostname}"
-echo "Updating ${APP_NAME} certificates"
-
-chmod 755 $APP_HOME/etc/certs/*.sh
-
-$APP_HOME/etc/certs/CertNew.sh -cn $_app_hostname >> /dev/null
+# Prepare Certs
+$ENTRYPOINT_HOME/certs.sh
 
 props set org.codice.ddf.system.hostname $_app_hostname $APP_HOME/etc/system.properties
 props set $_app_hostname $_app_hostname,group,admin,manager,viewer,system-admin,system-history,systembundles $APP_HOME/etc/users.properties
@@ -31,9 +28,9 @@ if [ -n "$SOLR_URL" ]; then
   props set solr.http.url $SOLR_URL $APP_HOME/etc/system.properties
 fi
 
-if [ -n "$NODE_NAME" ]; then
-  echo "Cluster support enabled, Node Name: $NODE_NAME"
-  props set org.codice.ddf.system.nodename $NODE_NAME $APP_HOME/etc/system.properties
+if [ -n "$APP_NODENAME" ]; then
+  echo "Cluster support enabled, Node Name: $APP_NODENAME"
+  props set org.codice.ddf.system.nodename $APP_NODENAME $APP_HOME/etc/system.properties
   props set org.codice.ddf.system.x509crl etc/certs/demoCA/crl/crl.pem $APP_HOME/etc/system.properties
 
   props set org.apache.ws.security.crypto.merlin.keystore.alias '${org.codice.ddf.system.nodename}' $APP_HOME/etc/ws-security/issuer/signature.properties
