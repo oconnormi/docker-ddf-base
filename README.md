@@ -16,6 +16,7 @@ Base level docker image containing all dependencies for DDF
     * updates hostname in `$APP_HOME/etc/system.properties`
   * Supports External solr via `SOLR_URL=<external_solr_url>`
   * Supports Solr Cloud via `SOLR_ZK_HOSTS=<zookeeper_hosts_list>`
+  * Supports external ldap via `LDAP_HOST=<hostname>`
   * Supports Clustering via `APP_NODENAME=<node_name>`
     * NodeName is used to identify the node within the cluster, useful for loadbalancing
   * Feature installation via `INSTALL_FEATURES=<feature1>;<feature2>;...`

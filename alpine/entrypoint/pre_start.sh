@@ -44,6 +44,13 @@ if [ -n "$APP_NODENAME" ]; then
   props set org.apache.ws.security.crypto.merlin.x509crl.file '${org.codice.ddf.system.x509crl}' $APP_HOME/etc/ws-security/server/encryption.properties
 fi
 
+# TODO: add more fine grained ldap configuration support
+if [ -n "$LDAP_HOST" ]; then
+  echo "Remote LDAP HOST: $LDAP_HOST configured"
+  cp $ENTRYPOINT_HOME/config/ldap/*.config $APP_HOME/etc/
+  props set org.codice.ddf.ldap.hostname $LDAP_HOST $APP_HOME/etc/system.properties
+fi
+
 if [ -n "$STARTUP_APPS" ]; then
   echo "Configuring startup apps"
   if [[ $STARTUP_APPS == *";"* ]]; then
