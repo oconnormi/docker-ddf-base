@@ -11,13 +11,14 @@ fi
 _keystoreName=$APP_HOME/etc/keystores/serverKeystore.jks
 _storepass=changeit
 _keytoolOpts="-keystore $_keystoreName -storepass $_storepass -noprompt"
-_san=dns:localhost,ip:127.0.0.1
+_san=DNS:$_app_hostname,DNS:localhost,IP:127.0.0.1
 _keyAlias=$_app_hostname
+_subject="/C=US/ST=AZ/L=Hursley/O=DDF/OU=Dev/CN=$_app_hostname"
 
 DUMMY_DELETE_OPTS="-delete -alias localhost $_keytoolOpts"
 
 if [ -n "$APP_NODENAME" ]; then
-  _san+=,dns:$APP_NODENAME
+  _san+=,DNS:$APP_NODENAME
   _keyAlias=$APP_NODENAME
 fi
 
@@ -36,35 +37,50 @@ if [ $? -ne 0 ] ; then
   fi
 
   # Generate key
-  keytool -genkey \
-          -alias $_keyAlias \
-          -dname "CN=$_app_hostname, OU=Dev, O=DDF, L=Hursley, S=AZ, C=US" \
-          $_keytoolOpts \
-          -keypass $_storepass \
-          -validity 3650 \
-          -ext SAN=$_san
+  openssl genrsa \
+    -out $APP_HOME/etc/certs/demoCA/private/$_keyAlias.key \
+    4096 > /dev/null 2>&1
 
   # Generate CSR
-  keytool -certreq \
-          -alias $_keyAlias \
-          -keyalg rsa \
-          $_keytoolOpts \
-          -file $APP_HOME/etc/certs/$_keyAlias.csr
+  export _san
+  openssl req \
+    -new \
+    -sha256 \
+    -subj $_subject \
+    -key $APP_HOME/etc/certs/demoCA/private/$_keyAlias.key \
+    -out $APP_HOME/etc/certs/demoCA/$_keyAlias.csr \
+    -config $ENTRYPOINT_HOME/ca/openssl-demo.cnf > /dev/null 2>&1
 
   echo "unique_subject = no" > $APP_HOME/etc/certs/demoCA/index.txt.attr
   # Sign request using DDF Demo CA
-  pushd $APP_HOME/etc/certs > /dev/null
   openssl ca \
           -batch \
-          -config $APP_HOME/etc/certs/openssl-demo.cnf \
+          -config $ENTRYPOINT_HOME/ca/openssl-demo.cnf \
           -passin pass:secret \
-          -in $APP_HOME/etc/certs/$_keyAlias.csr \
+          -in $APP_HOME/etc/certs/demoCA/$_keyAlias.csr \
           -out $APP_HOME/etc/certs/demoCA/newcerts/$_keyAlias.cer > /dev/null 2>&1
-  popd > /dev/null
+
+  cat $APP_HOME/etc/certs/demoCA/cacert.pem \
+      $APP_HOME/etc/certs/demoCA/newcerts/$_keyAlias.cer \
+      $APP_HOME/etc/certs/demoCA/private/$_keyAlias.key \
+      > $APP_HOME/etc/certs/demoCA/private/$_keyAlias.pem
+
+  openssl pkcs12 \
+          -export \
+          -out $APP_HOME/etc/certs/demoCA/private/$_keyAlias.p12 \
+          -in $APP_HOME/etc/certs/demoCA/private/$_keyAlias.pem \
+          -passin pass:$_storepass \
+          -passout pass:$_storepass > /dev/null 2>&1
 
   # Import Cert
-  keytool -import \
+  keytool -importkeystore \
           $_keytoolOpts \
-          -file $APP_HOME/etc/certs/demoCA/newcerts/$_keyAlias.cer \
-          -alias $_keyAlias
+          -keypass $_storepass \
+          -srcstorepass $_storepass \
+          -srckeystore $APP_HOME/etc/certs/demoCA/private/$_keyAlias.p12 > /dev/null 2>&1
+
+  keytool -changealias \
+          $_keytoolOpts \
+          -alias 1 \
+          -destalias $_keyAlias > /dev/null 2>&1
 fi
