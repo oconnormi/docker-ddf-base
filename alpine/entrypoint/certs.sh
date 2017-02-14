@@ -14,6 +14,7 @@ _keytoolOpts="-keystore $_keystoreName -storepass $_storepass -noprompt"
 _san=DNS:$_app_hostname,DNS:localhost,IP:127.0.0.1
 _keyAlias=$_app_hostname
 _subject="/C=US/ST=AZ/L=Hursley/O=DDF/OU=Dev/CN=$_app_hostname"
+_serial=$(cat /dev/urandom | tr -dc '0-9' | fold -w 16 | head -n 1)
 
 DUMMY_DELETE_OPTS="-delete -alias localhost $_keytoolOpts"
 
@@ -36,6 +37,9 @@ if [ $? -ne 0 ] ; then
     keytool $DUMMY_DELETE_OPTS
   fi
 
+  # Generate random serial
+  echo $_serial > $APP_HOME/etc/certs/demoCA/serial
+
   # Generate key
   openssl genrsa \
     -out $APP_HOME/etc/certs/demoCA/private/$_keyAlias.key \
@@ -53,6 +57,8 @@ if [ $? -ne 0 ] ; then
 
   echo "unique_subject = no" > $APP_HOME/etc/certs/demoCA/index.txt.attr
   # Sign request using DDF Demo CA
+
+  echo "SIGNING CERT!!"
   openssl ca \
           -batch \
           -config $ENTRYPOINT_HOME/ca/openssl-demo.cnf \
