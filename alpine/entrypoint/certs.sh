@@ -20,7 +20,6 @@ DUMMY_DELETE_OPTS="-delete -alias localhost $_keytoolOpts"
 
 if [ -n "$APP_NODENAME" ]; then
   _san+=,DNS:$APP_NODENAME
-  _keyAlias=$APP_NODENAME
 fi
 
 # Check if already complete
@@ -58,7 +57,6 @@ if [ $? -ne 0 ] ; then
   echo "unique_subject = no" > $APP_HOME/etc/certs/demoCA/index.txt.attr
   # Sign request using DDF Demo CA
 
-  echo "SIGNING CERT!!"
   openssl ca \
           -batch \
           -config $ENTRYPOINT_HOME/ca/openssl-demo.cnf \

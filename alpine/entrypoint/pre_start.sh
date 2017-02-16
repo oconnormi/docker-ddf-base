@@ -30,18 +30,7 @@ fi
 
 if [ -n "$APP_NODENAME" ]; then
   echo "Cluster support enabled, Node Name: $APP_NODENAME"
-  props set org.codice.ddf.system.nodename $APP_NODENAME $APP_HOME/etc/system.properties
-  props set org.codice.ddf.system.x509crl etc/certs/demoCA/crl/crl.pem $APP_HOME/etc/system.properties
-
-  props set org.apache.ws.security.crypto.merlin.keystore.alias '${org.codice.ddf.system.nodename}' $APP_HOME/etc/ws-security/issuer/signature.properties
-  props set org.apache.ws.security.crypto.merlin.x509crl.file '${org.codice.ddf.system.x509crl}' $APP_HOME/etc/ws-security/issuer/signature.properties
-  props set org.apache.ws.security.crypto.merlin.keystore.alias '${org.codice.ddf.system.nodename}' $APP_HOME/etc/ws-security/issuer/encryption.properties
-  props set org.apache.ws.security.crypto.merlin.x509crl.file '${org.codice.ddf.system.x509crl}' $APP_HOME/etc/ws-security/issuer/encryption.properties
-
-  props set org.apache.ws.security.crypto.merlin.keystore.alias '${org.codice.ddf.system.nodename}' $APP_HOME/etc/ws-security/server/signature.properties
-  props set org.apache.ws.security.crypto.merlin.x509crl.file '${org.codice.ddf.system.x509crl}' $APP_HOME/etc/ws-security/server/signature.properties
-  props set org.apache.ws.security.crypto.merlin.keystore.alias '${org.codice.ddf.system.nodename}' $APP_HOME/etc/ws-security/server/encryption.properties
-  props set org.apache.ws.security.crypto.merlin.x509crl.file '${org.codice.ddf.system.x509crl}' $APP_HOME/etc/ws-security/server/encryption.properties
+  props set org.codice.ddf.system.cluster.hostname $APP_NODENAME $APP_HOME/etc/system.properties
 fi
 
 # TODO: add more fine grained ldap configuration support
