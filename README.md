@@ -2,6 +2,43 @@
 
 Base level docker image containing all dependencies for DDF
 
+## Cross Platform Entrypoint
+Cross platform bootstrapping of DDF nodes is a WIP. 
+All Bash and Powershell functionality is being ported to groovy in order to support both windows and
+\*nix environments with a single codebase
+
+The cross platform version will replace all supported env vars with command line flags
+
+### Current CLI
+```bash
+usage: entrypoint [options]
+Bootstraps DDF Based Systems
+ -c,--cluster <clusterName>   Enables clustered mode. Sets cluster name
+ -h,--help                    print this message
+ -i,--install-config <arg>    Path to json config file for automated
+                              installs
+ -l,--ldap-host <ldapHost>    Configures ldap connection. Use hostname
+                              only (This is currently for testing only)
+ -s,--solr-url <solrHost>     Specify the Solr client connection. If using
+                              Solr Cloud this will be a comma-separated
+                              list of zookeeper `host:port`
+    --solr-mode <solrMode>    Choose Solr client mode. Options are: [http
+                              (default), cloud]
+```
+
+### Tasks
+
+- [X] Create tests covering pre-start configuration processes
+- [ ] Create tests covering post-start configuration processes
+- [ ] Replace pre-start shell script implementation
+- [ ] Replace certs shell script with ddf cert generator once SAN certificate generation is supported
+- [ ] Replace post-start shell script implementation
+- [ ] Create docker image for linux
+- [ ] Create docker image for windows
+
+# Legacy Bash and Powershell version info
+All details below relate to the original functionality provided by the bash and ps1 scripts
+
 ## Features
 
 * Oracle JDK 8

@@ -1,0 +1,20 @@
+plugins {
+    id 'com.palantir.docker' version '0.11.0'
+    id "org.ajoberstar.grgit" version "1.6.0"
+}
+
+configurations {
+    dist
+}
+
+version = grgit.branch.current.name
+
+dependencies {
+    dist project(path: ':entrypoint', configuration: 'tar')
+}
+
+docker {
+    name "oconnormi/ddf-base:${version}"
+    dockerfile 'Dockerfile'
+    files configurations.dist.artifacts.tar.outputs
+}
