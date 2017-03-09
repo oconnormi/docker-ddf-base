@@ -36,26 +36,12 @@ fi
 # TODO: add more fine grained ldap configuration support
 if [ -n "$LDAP_HOST" ]; then
   echo "Remote LDAP HOST: $LDAP_HOST configured"
-  cp $ENTRYPOINT_HOME/config/ldap/*.config $APP_HOME/etc/
   props set org.codice.ddf.ldap.hostname $LDAP_HOST $APP_HOME/etc/system.properties
-fi
-
-if [ -n "$STARTUP_APPS" ]; then
-  echo "Configuring startup apps"
-  if [[ $STARTUP_APPS == *";"* ]]; then
-  _appCount=$[$(echo $STARTUP_APPS | grep -o ";" | wc -l) + 1]
+  if [ -n "$LDAP_PORT" ]; then
+    props set org.codice.ddf.ldap.port $LDAP_PORT $APP_HOME/etc/system.properties
   else
-    _appCount=1
+    props set org.codice.ddf.ldap.port 1636 $APP_HOME/etc/system.properties
   fi
-
-  echo "Adding $_appCount startup apps"
-
-  for (( i=1; i<=$_appCount; i++ ))
-  do
-    _currentApp=$(echo $STARTUP_APPS | cut -d ";" -f $i)
-    echo "Adding: $_currentApp"
-    props set $_currentApp '' $APP_HOME/etc/org.codice.ddf.admin.applicationlist.properties
-  done
 fi
 
 if [ -d "$ENTRYPOINT_HOME/pre" ]; then
