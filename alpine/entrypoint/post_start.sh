@@ -5,6 +5,9 @@ do
    [[ "${LOGLINE}" == *"Binding bundle: [landing-page"* ]] && pkill -P $$ tail
 done
 
+$APP_HOME/bin/client waitForReady -r 12 -d 10
+$APP_HOME/bin/client admin:configure /opt/ddfConfig.json -r 12 -d 10
+
 if [ -n "$INSTALL_FEATURES" ]; then
   if [[ $INSTALL_FEATURES == *";"* ]]; then
   _featureCount=$[$(echo $INSTALL_FEATURES | grep -o ";" | wc -l) + 1]
@@ -46,6 +49,12 @@ if [ -n "$UNINSTALL_FEATURES" ]; then
     echo "Installing: $_currentFeature"
     $APP_HOME/bin/client feature:uninstall $_currentFeature
   done
+fi
+
+# TODO: add more fine grained ldap configuration support
+if [ -n "$LDAP_HOST" ]; then
+  echo "Copying LDAP configs"
+  cp $ENTRYPOINT_HOME/config/ldap/*.config $APP_HOME/etc/
 fi
 
 if [ -d "$ENTRYPOINT_HOME/post" ]; then
