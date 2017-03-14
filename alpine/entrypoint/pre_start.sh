@@ -57,5 +57,7 @@ echo "To run additional pre_start configurations mount a script to ${ENTRYPOINT_
 
 if [ -e "${ENTRYPOINT_HOME}/pre_start_custom.sh" ]; then
   echo "Pre-Start Custom Configuration Script found, running now..."
-  chmod 755 ${ENTRYPOINT_HOME}/pre_start_custom.sh && ${ENTRYPOINT_HOME}/pre_start_custom.sh
+  chmod 755 ${ENTRYPOINT_HOME}/pre_start_custom.sh
+  sleep 1
+  ${ENTRYPOINT_HOME}/pre_start_custom.sh
 fi
