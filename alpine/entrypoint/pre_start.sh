@@ -11,8 +11,8 @@ fi
 $ENTRYPOINT_HOME/certs.sh
 
 props set org.codice.ddf.system.hostname $_app_hostname $APP_HOME/etc/system.properties
-props set $_app_hostname $_app_hostname,group,admin,manager,viewer,system-admin,system-history,systembundles $APP_HOME/etc/users.properties
 props del localhost $APP_HOME/etc/users.properties
+props set $_app_hostname $_app_hostname,group,admin,manager,viewer,system-admin,system-history,systembundles $APP_HOME/etc/users.properties
 sed -i "s/localhost/$_app_hostname/" $APP_HOME/etc/users.attributes
 
 if [ -n "$SOLR_ZK_HOSTS" ]; then
