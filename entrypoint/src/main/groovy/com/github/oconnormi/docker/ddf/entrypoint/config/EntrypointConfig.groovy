@@ -8,6 +8,7 @@ class EntrypointConfig {
     private String hostname
     private String solrMode
     private String solrUrl
+    private String siteName
     private String clusterName
     private String ldapHost
     private Path installConfigPath
@@ -23,6 +24,7 @@ class EntrypointConfig {
         this.hostname = InetAddress.getLocalHost().canonicalHostName
         this.solrMode = options.'solr-mode'
         this.solrUrl = options.s
+        this.siteName = options.sitename
         this.clusterName = options.c
         this.ldapHost = options.l
         this.installConfigPath = Paths.get(options.i)
@@ -58,6 +60,14 @@ class EntrypointConfig {
 
     void setSolrUrl(String solrUrl) {
         this.solrUrl = solrUrl
+    }
+
+    String getSiteName() {
+        return siteName
+    }
+
+    void setSiteName(String siteName) {
+        this.siteName = siteName
     }
 
     String getClusterName() {

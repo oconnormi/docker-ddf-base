@@ -1,10 +1,11 @@
 package com.github.oconnormi.docker.ddf.entrypoint
 
+import static com.github.oconnormi.docker.ddf.entrypoint.config.Globals.*
+import static com.github.oconnormi.docker.ddf.entrypoint.util.Util.loadPropFile
+
 import com.github.oconnormi.docker.ddf.entrypoint.config.AppMetadata
 import com.github.oconnormi.docker.ddf.entrypoint.config.EntrypointConfig
 import groovy.json.JsonSlurper
-import org.codehaus.groovy.util.StringUtil
-import org.junit.Ignore
 import org.junit.Rule
 import org.junit.rules.TemporaryFolder
 import spock.lang.Specification
@@ -14,21 +15,8 @@ import java.nio.file.Path
 import java.nio.file.Paths
 import java.security.KeyStore
 import java.security.cert.Certificate
-import java.security.cert.X509Certificate
 
 class PreStartSetupSpecification extends Specification {
-
-    private static final SYSTEM_HOSTNAME_PROPERTY = "org.codice.ddf.system.hostname"
-    private static final DEFAULT_HOSTNAME = "localhost"
-    private static final DEFAULT_SYSTEM_USER = "localhost"
-    private static final DEFAULT_KEYSTORE_PASSWORD = "changeit"
-    private static final SOLR_HTTP_URL_PROPERTY = "solr.http.url"
-    private static final SOLR_CLIENT_PROPERTY = "solr.client"
-    private static final SOLR_CLOUD_URL_PROPERTY = "solr.cloud.zookeeper"
-    private static final SOLR_HTTP_CLIENT_NAME = "HttpSolrClient"
-    private static final SOLR_CLOUD_CLIENT_NAME = "CloudSolrClient"
-    private static final CLUSTER_NAME_PROPERTY = "org.codice.ddf.system.cluster.hostname"
-    private static final LDAP_HOST_PROPERTY = "org.codice.ddf.ldap.hostname"
 
     @Rule TemporaryFolder tmp
     PreStartSetup preStartSetup = new PreStartSetup()
@@ -51,7 +39,7 @@ class PreStartSetupSpecification extends Specification {
         minimalConfig = Stub()
 
         minimalConfig.getAppMetadata() >> testMinimalAppMetadata
-        minimalConfig.getHostname() >> testHostname
+        minimalConfig.hostname >> testHostname
     }
 
     def "it should update system properties with the current hostname"() {
@@ -198,6 +186,28 @@ class PreStartSetupSpecification extends Specification {
             assert testProperties.get(LDAP_HOST_PROPERTY) == ldapHost
     }
 
+    def "it should set the sitename to the current hostname when no sitename is provided"() {
+        setup:
+            Properties testProperties
+        when:
+            preStartSetup.run(minimalConfig)
+            testProperties = loadPropFile(systemProps)
+        then:
+            assert testProperties.get(SITE_NAME_PROPERTY) == DEFAULT_HOSTNAME
+    }
+
+    def "it should set the sitename to the provided sitename"() {
+        setup:
+            Properties testProperties
+            String siteName = "test.site.name"
+            minimalConfig.siteName >> siteName
+        when:
+            preStartSetup.run(minimalConfig)
+            testProperties = loadPropFile(systemProps)
+        then:
+            assert testProperties.get(SITE_NAME_PROPERTY) == siteName
+    }
+
     private void createSystemFolder(Path systemHome) {
         Path systemLogDir = Paths.get(systemHome.toString(), "data", "log")
         Files.createDirectories(systemLogDir)
@@ -216,21 +226,6 @@ class PreStartSetupSpecification extends Specification {
         Files.copy(this.getClass().getResourceAsStream('/systemHome/etc/users.properties'), systemUserProps)
         Files.copy(this.getClass().getResourceAsStream('/systemHome/etc/users.attributes'), systemUserAttr)
         Files.copy(this.getClass().getResourceAsStream('/systemHome/etc/keystores/serverKeystore.jks'), keyStorePath)
-    }
-
-    private Properties loadPropFile(Path propertyFilePath) {
-        Properties properties = new Properties()
-        InputStream input = null
-
-        try {
-            input = new FileInputStream(propertyFilePath.toString())
-
-            properties.load(input)
-        } catch (IOException e) {
-            e.printStackTrace()
-        }
-
-        return properties
     }
 
     private KeyStore loadKeystore(Path keystorePath) {
