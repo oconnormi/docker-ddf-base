@@ -22,6 +22,8 @@ Base level docker image containing all dependencies for DDF
   * Feature installation via `INSTALL_FEATURES=<feature1>;<feature2>;...`
   * Feature uninstallation via `UNINSTALL_FEATURES=<feature1>;<feature2>;...`
   * Startup apps via `STARTUP_APPS=<app1>;<app2>;...`
+  * Supports initial configuration via `$ENTRYPOINT_HOME/pre_config`
+    * All files and directories contained under the `$ENTRYPOINT_HOME/pre_config` directory will be copied under `$APP_HOME` _after_ all the other configuration steps have been performed
 
 
 ## Requirements
@@ -34,7 +36,7 @@ Any upstream containers must provide environment variables for:
 
 ## Usage
 
-This image is meant to be the basis for any ddf based image.
+This image is meant to be the basis for any ddf based image and cannot be run on its own.
 It packages the dependencies and an entrypoint script for use with any ddf based application
 
 ```Dockerfile

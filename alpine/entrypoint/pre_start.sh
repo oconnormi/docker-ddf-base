@@ -45,6 +45,12 @@ if [ -n "$LDAP_HOST" ]; then
   fi
 fi
 
+# Copy any existing configuration files before starting the container
+if [ -d "$ENTRYPOINT_HOME/pre_config" ]; then
+  echo "Copying configuration files from $ENTRYPOINT_HOME/pre_config to $APP_HOME"
+  cp -r $ENTRYPOINT_HOME/pre_config/* $APP_HOME
+fi
+
 if [ -d "$ENTRYPOINT_HOME/pre" ]; then
   for f in "$ENTRYPOINT_HOME/pre/*";
     do
