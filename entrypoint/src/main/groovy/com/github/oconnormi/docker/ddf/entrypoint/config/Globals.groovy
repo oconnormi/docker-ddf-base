@@ -5,6 +5,7 @@ class Globals {
     public static final SYSTEM_HOSTNAME_PROPERTY = "org.codice.ddf.system.hostname"
     public static final DEFAULT_HOSTNAME = "localhost"
     public static final DEFAULT_SYSTEM_USER = "localhost"
+    public static final SYSTEM_USER_ROLES = "group,admin,manager,viewer,system-admin,system-history,systembundles"
     public static final DEFAULT_KEYSTORE_PASSWORD = "changeit"
     public static final SOLR_HTTP_URL_PROPERTY = "solr.http.url"
     public static final SOLR_CLIENT_PROPERTY = "solr.client"

@@ -1,6 +1,9 @@
 package com.github.oconnormi.docker.ddf.entrypoint
 
+import groovy.json.JsonBuilder
+
 import static com.github.oconnormi.docker.ddf.entrypoint.config.Globals.*
+import static com.github.oconnormi.docker.ddf.entrypoint.util.Util.loadJsonPropFile
 import static com.github.oconnormi.docker.ddf.entrypoint.util.Util.loadPropFile
 
 import com.github.oconnormi.docker.ddf.entrypoint.config.AppMetadata
@@ -75,22 +78,22 @@ class PreStartSetupSpecification extends Specification {
 
     def "it should remove the default system user from the user attributes file"() {
         setup:
-            def userAttrs
+            Map userAttrs
         when:
             preStartSetup.run(minimalConfig)
-            userAttrs = new JsonSlurper().parse(systemUserAttr.toFile())
+            userAttrs = loadJsonPropFile(systemUserAttr)
         then:
-            assert userAttrs."${DEFAULT_SYSTEM_USER}" == null
+            assert userAttrs.get(DEFAULT_SYSTEM_USER) == null
     }
 
     def "it should add a new system user matching the hostname to the user attributes file"() {
         setup:
-            def userAttrs
+            Map<String, Object> userAttrs
         when:
             preStartSetup.run(minimalConfig)
-            userAttrs = new JsonSlurper().parse(systemUserAttr.toFile())
+            userAttrs = loadJsonPropFile(systemUserAttr)
         then:
-            assert userAttrs."${testHostname}" != null
+            assert userAttrs.get(testHostname) != null
     }
 
     def "it should remove the default certificates from the server keystore"() {
