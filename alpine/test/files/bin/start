@@ -1,0 +1,6 @@
+#!/bin/bash
+echo "Starting System" >> $APP_LOG
+
+# Wait 10 seconds then echo "Binding bundle: [landing-page" to the log to simulate system started
+sleep 10
+echo "Binding bundle: [landing-page]" >> $APP_LOG

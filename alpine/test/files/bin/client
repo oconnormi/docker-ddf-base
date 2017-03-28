@@ -1,0 +1,3 @@
+#!/bin/bash
+
+echo "client command: $@" >> $APP_LOG
