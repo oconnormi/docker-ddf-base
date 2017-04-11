@@ -6,7 +6,7 @@ do
 done
 
 $APP_HOME/bin/client waitForReady -r 12 -d 10
-$APP_HOME/bin/client admin:configure /opt/ddfConfig.json -r 12 -d 10
+$APP_HOME/bin/client admin:install /opt/ddfConfig.json -r 12 -d 10
 
 if [ -n "$INSTALL_FEATURES" ]; then
   if [[ $INSTALL_FEATURES == *";"* ]]; then
