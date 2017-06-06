@@ -24,6 +24,8 @@ Base level docker image containing all dependencies for DDF
   * Startup apps via `STARTUP_APPS=<app1>;<app2>;...`
   * Supports initial configuration via `$ENTRYPOINT_HOME/pre_config`
     * All files and directories contained under the `$ENTRYPOINT_HOME/pre_config` directory will be copied under `$APP_HOME` _after_ all the other configuration steps have been performed
+  * Advance installation using install profiles via `INSTALL_PROFILE=<profile>`
+    * Place installation profiles under `$APP_HOME/etc/profiles/`
 
 
 ## Requirements
