@@ -1,5 +1,8 @@
 #!/bin/bash
 
+_default_http_port=8181
+_default_https_port=8993
+
 # Determine app hostname
 if [ -n "$APP_HOSTNAME" ]; then
   _app_hostname=$APP_HOSTNAME
@@ -15,6 +18,16 @@ props set org.codice.ddf.system.siteName $_app_hostname $APP_HOME/etc/system.pro
 props del localhost $APP_HOME/etc/users.properties
 props set $_app_hostname $_app_hostname,group,admin,manager,viewer,system-admin,system-history,systembundles $APP_HOME/etc/users.properties
 sed -i "s/localhost/$_app_hostname/" $APP_HOME/etc/users.attributes
+
+if [ -n "$BASE_URL_HTTP_PORT" ]; then
+  props set org.codice.ddf.system.httpPort $BASE_URL_HTTP_PORT $APP_HOME/etc/system.properties
+  props set org.codice.ddf.system.internalHttpPort $_default_http_port $APP_HOME/etc/system.properties
+fi
+
+if [ -n "$BASE_URL_HTTPS_PORT" ]; then
+  props set org.codice.ddf.system.httpsPort $BASE_URL_HTTPS_PORT $APP_HOME/etc/system.properties
+  props set org.codice.ddf.system.internalHttpsPort $_default_https_port $APP_HOME/etc/system.properties
+fi
 
 if [ -n "$SOLR_ZK_HOSTS" ]; then
   echo "Solr Cloud Support is enabled, zkhosts: $SOLR_ZK_HOSTS"

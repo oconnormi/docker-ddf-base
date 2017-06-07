@@ -26,7 +26,7 @@ Base level docker image containing all dependencies for DDF
     * All files and directories contained under the `$ENTRYPOINT_HOME/pre_config` directory will be copied under `$APP_HOME` _after_ all the other configuration steps have been performed
   * Advance installation using install profiles via `INSTALL_PROFILE=<profile>`
     * Place installation profiles under `$APP_HOME/etc/profiles/`
-
+  * Supports running behind forwarded ports via `$BASE_URL_HTTPS_PORT=<externalHttpsPort>` and `$BASE_URL_HTTP_PORT=<externalHttpPort>`
 
 ## Requirements
 
