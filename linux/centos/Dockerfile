@@ -22,7 +22,7 @@ RUN curl -OL "http://download.oracle.com/otn-pub/java/jdk/$JDK_VERSION-$JDK_BUIL
 
 # Stage Entrypoint scripts
 RUN mkdir -p $ENTRYPOINT_HOME
-COPY ../entrypoint/* $ENTRYPOINT_HOME/
+COPY entrypoint/* $ENTRYPOINT_HOME/
 
 RUN curl -L https://github.com/oconnormi/props/releases/download/v0.2.0/props_linux_386 -o /usr/local/bin/props \
     && chmod 755 /usr/local/bin/props
