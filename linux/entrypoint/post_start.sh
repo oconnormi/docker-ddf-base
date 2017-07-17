@@ -5,7 +5,10 @@ do
    [[ "${LOGLINE}" == *"Binding bundle: [landing-page"* ]] && pkill -P $$ tail
 done
 
-$APP_HOME/bin/client waitForReady -r 12 -d 10
+# $APP_HOME/bin/client waitForReady -r 12 -d 10
+
+echo "Wait a minute for Karaf to start completely..."
+sleep 60
 
 if [ -n "$INSTALL_PROFILE" ]; then
   $APP_HOME/bin/client profile:install $INSTALL_PROFILE -r 12 -d 10
