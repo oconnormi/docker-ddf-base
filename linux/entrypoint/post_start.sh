@@ -5,10 +5,8 @@ do
    [[ "${LOGLINE}" == *"Binding bundle: [landing-page"* ]] && pkill -P $$ tail
 done
 
-# $APP_HOME/bin/client waitForReady -r 12 -d 10
-
-echo "Wait a minute for Karaf to start completely..."
-sleep 60
+#$APP_HOME/bin/client waitForReady -r 12 -d 10
+$APP_HOME/bin/client "while { (bundle:list -t 0 | grep -i \"active.*DDF\s::\sadmin\s::\sUI\" | tac) isEmpty } { echo -n \". \"; sleep 1 }; while {(\"3\" equals ((bundle:list -t 0 | grep -i -v \"active\" | grep -i \"hosts:\" | wc -l | tac) trim) | tac) equals \"false\"} { echo -n \". \"; sleep 1 }; echo \"\"; echo \"System Ready\""
 
 if [ -n "$INSTALL_PROFILE" ]; then
   $APP_HOME/bin/client profile:install $INSTALL_PROFILE -r 12 -d 10
