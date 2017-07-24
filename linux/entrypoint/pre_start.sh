@@ -45,6 +45,10 @@ if [ -n "$LDAP_HOST" ]; then
   fi
 fi
 
+if [ -n "$HTTPS_PORT" ]; then
+   props set org.codice.ddf.system.httpsPort $HTTPS_PORT $APP_HOME/etc/system.properties
+fi
+
 # Copy any existing configuration files before starting the container
 if [ -d "$ENTRYPOINT_HOME/pre_config" ]; then
   echo "Copying configuration files from $ENTRYPOINT_HOME/pre_config to $APP_HOME"
