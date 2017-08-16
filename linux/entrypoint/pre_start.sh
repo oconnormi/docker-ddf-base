@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Merge distribution files into volumes
+$ENTRYPOINT_HOME/merge.sh
+
 # Determine app hostname
 if [ -n "$APP_HOSTNAME" ]; then
   _app_hostname=$APP_HOSTNAME

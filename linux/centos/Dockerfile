@@ -8,6 +8,12 @@ ENV JDK_BUILD_VERSION=b11
 ENV JAVA_HOME /usr/java/latest
 # DDF Environment Variables
 ENV ENTRYPOINT_HOME=/opt/entrypoint
+ENV APP_CONFIG=/config
+ENV APP_DATA=/data
+ENV APP_DEPLOY=/deploy
+ENV KARAF_ETC=$APP_CONFIG
+ENV KARAF_DATA=$APP_DATA
+ENV KARAF_DEPLOY=$APP_DEPLOY
 
 # Update OS with necessary packages
 RUN yum update -y \
