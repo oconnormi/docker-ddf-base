@@ -17,8 +17,7 @@ ENV KARAF_DEPLOY=$APP_DEPLOY
 
 # Update OS with necessary packages
 RUN yum update -y \
-    && yum install -y unzip \
-    && yum install -y openssl
+    && yum install -y unzip openssl rsync
 
 # Download Oracle Java
 RUN curl -OL "http://download.oracle.com/otn-pub/java/jdk/$JDK_VERSION-$JDK_BUILD_VERSION/d54c1d3a095b4ff2b6607d096fa80163/jdk-$JDK_VERSION-linux-x64.rpm" -H 'Cookie: oraclelicense=accept-securebackup-cookie' \
