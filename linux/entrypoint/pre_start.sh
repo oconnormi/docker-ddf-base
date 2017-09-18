@@ -64,6 +64,9 @@ if [ -d "$ENTRYPOINT_HOME/pre" ]; then
     done;
 fi
 
+# Enable SSH endpoint
+sed -i 's/#sshPort=8101/sshPort=8101/' ${APP_HOME}/etc/org.apache.karaf.shell.cfg
+
 echo "To run additional pre_start configurations mount a script to ${ENTRYPOINT_HOME}/pre_start_custom.sh"
 
 if [ -e "${ENTRYPOINT_HOME}/pre_start_custom.sh" ]; then
