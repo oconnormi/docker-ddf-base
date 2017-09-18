@@ -26,6 +26,7 @@ Base level docker image containing all dependencies for DDF
     * All files and directories contained under the `$ENTRYPOINT_HOME/pre_config` directory will be copied under `$APP_HOME` _after_ all the other configuration steps have been performed
   * Advance installation using install profiles via `INSTALL_PROFILE=<profile>`
     * Place installation profiles under `$APP_HOME/etc/profiles/`
+  * Enable DDF ssh endpoint via `$SSH_ENABLED=true`. *NOTE:* Disabled by default
 
 
 ## Requirements

@@ -78,3 +78,8 @@ if [ -e "${ENTRYPOINT_HOME}/post_start_custom.sh" ]; then
   sleep 1
   ${ENTRYPOINT_HOME}/post_start_custom.sh
 fi
+
+if [ ! "${SSH_ENABLED}" = true ]; then
+  echo "SSH_ENABLED not set to true, disabling ssh endpoint"
+  sed -i 's/sshPort=8101/#sshPort=8101/' ${APP_HOME}/etc/org.apache.karaf.shell.cfg
+fi
