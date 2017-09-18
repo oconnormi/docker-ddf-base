@@ -1,5 +1,13 @@
 #!/bin/bash
 
+echo -n "Waiting for log file: ${APP_LOG} to be created..."
+while [ ! -f ${APP_LOG} ]
+do
+  sleep 1
+  echo -n "."
+done
+echo -e "\nLog file found, continuing..."
+
 tail -f $APP_LOG | while read LOGLINE
 do
    [[ "${LOGLINE}" == *"Binding bundle: [landing-page"* ]] && pkill -P $$ tail
