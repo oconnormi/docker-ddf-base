@@ -1,12 +1,15 @@
 #!/bin/bash
 
-tail -f $APP_LOG | while read LOGLINE
+echo -n "Waiting for log file: ${APP_LOG} to be created..."
+while [ ! -f ${APP_LOG} ]
 do
-   [[ "${LOGLINE}" == *"Binding bundle: [landing-page"* ]] && pkill -P $$ tail
+  sleep 1
+  echo -n "."
 done
+echo -e "\nLog file found, continuing..."
 
 #$APP_HOME/bin/client waitForReady -r 12 -d 10
-$APP_HOME/bin/client "while { (bundle:list -t 0 | grep -i \"active.*DDF\s::\sadmin\s::\sUI\" | tac) isEmpty } { echo -n \". \"; sleep 1 }; while {(\"3\" equals ((bundle:list -t 0 | grep -i -v \"active\" | grep -i \"hosts:\" | wc -l | tac) trim) | tac) equals \"false\"} { echo -n \". \"; sleep 1 }; echo \"\"; echo \"System Ready\""
+$APP_HOME/bin/client "while { (bundle:list -t 0 | grep -i \"active.*DDF\s::\sadmin\s::\sUI\" | tac) isEmpty } { echo -n \". \"; sleep 1 }; while {(\"3\" equals ((bundle:list -t 0 | grep -i -v \"active\" | grep -i \"hosts:\" | wc -l | tac) trim) | tac) equals \"false\"} { echo -n \". \"; sleep 1 }; echo \"\"; echo \"System Ready\"" -r 12 -d 10
 
 if [ -n "$INSTALL_PROFILE" ]; then
   $APP_HOME/bin/client profile:install $INSTALL_PROFILE -r 12 -d 10
