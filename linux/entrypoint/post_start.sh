@@ -1,5 +1,24 @@
 #!/bin/bash
 
+
+# Determine karaf client delay
+if [ -n "$KARAF_CLIENT_DELAY" ]; then
+  echo "KARAF_CLIENT_DELAY environment variable found set as ${KARAF_CLIENT_DELAY} seconds"
+  _karaf_client_delay=$KARAF_CLIENT_DELAY
+else
+  echo "KARAF_CLIENT_DELAY environment variable NOT SET. Defaulting to 10 seconds"
+  _karaf_client_delay=10
+fi
+
+# Determine karaf client retry
+if [ -n "$KARAF_CLIENT_RETRIES" ]; then
+  echo "KARAF_CLIENT_RETRIES environment variable found set as ${KARAF_CLIENT_RETRIES} max retries"
+  _karaf_client_retries=$KARAF_CLIENT_RETRIES
+else
+  echo "KARAF_CLIENT_RETRIES environment variable NOT SET. Defaulting to 12 max retries"
+  _karaf_client_retries=12
+fi
+
 echo -n "Waiting for log file: ${APP_LOG} to be created..."
 while [ ! -f ${APP_LOG} ]
 do
@@ -9,10 +28,10 @@ done
 echo -e "\nLog file found, continuing..."
 
 #$APP_HOME/bin/client waitForReady -r 12 -d 10
-$APP_HOME/bin/client "while { (bundle:list -t 0 | grep -i \"active.*DDF\s::\sadmin\s::\sUI\" | tac) isEmpty } { echo -n \". \"; sleep 1 }; while {(\"3\" equals ((bundle:list -t 0 | grep -i -v \"active\" | grep -i \"hosts:\" | wc -l | tac) trim) | tac) equals \"false\"} { echo -n \". \"; sleep 1 }; echo \"\"; echo \"System Ready\"" -r 12 -d 10
+$APP_HOME/bin/client "while { (bundle:list -t 0 | grep -i \"active.*DDF\s::\sadmin\s::\sUI\" | tac) isEmpty } { echo -n \". \"; sleep 1 }; while {(\"3\" equals ((bundle:list -t 0 | grep -i -v \"active\" | grep -i \"hosts:\" | wc -l | tac) trim) | tac) equals \"false\"} { echo -n \". \"; sleep 1 }; echo \"\"; echo \"System Ready\"" -r $_karaf_client_retries -d $_karaf_client_delay
 
 if [ -n "$INSTALL_PROFILE" ]; then
-  $APP_HOME/bin/client profile:install $INSTALL_PROFILE -r 12 -d 10
+  $APP_HOME/bin/client profile:install $INSTALL_PROFILE -r $_karaf_client_retries -d $_karaf_client_delay
 fi
 
 if [ -n "$INSTALL_FEATURES" ]; then

@@ -27,6 +27,8 @@ Base level docker image containing all dependencies for DDF
   * Advance installation using install profiles via `INSTALL_PROFILE=<profile>`
     * Place installation profiles under `$APP_HOME/etc/profiles/`
   * Enable DDF ssh endpoint via `$SSH_ENABLED=true`. *NOTE:* Disabled by default
+  * Set Karaf client startup wait time via `$KARAF_CLIENT_DELAY`. Default is set at 10 seconds.
+  * Set Karaf client startup max retries via `$KARAF_CLIENT_RETRIES`. Default is set at 12 retries.   
 
 
 ## Requirements
