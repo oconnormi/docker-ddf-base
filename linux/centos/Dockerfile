@@ -18,7 +18,9 @@ RUN yum update -y \
 RUN curl -OL "http://download.oracle.com/otn-pub/java/jdk/$JDK_VERSION-$JDK_BUILD_VERSION/d54c1d3a095b4ff2b6607d096fa80163/jdk-$JDK_VERSION-linux-x64.rpm" -H 'Cookie: oraclelicense=accept-securebackup-cookie' \
     && yum install -y jdk-$JDK_VERSION-linux-x64.rpm \
     && yum clean all \
-    && rm -f jdk-$JDK_VERSION-linux-x64.rpm
+    && rm -f jdk-$JDK_VERSION-linux-x64.rpm \
+    && curl -LsSk https://github.com/stedolan/jq/releases/download/jq-1.5/jq-linux64 -o /usr/local/bin/jq \
+    && chmod 755 /usr/local/bin/jq
 
 # Stage Entrypoint scripts
 RUN mkdir -p $ENTRYPOINT_HOME
