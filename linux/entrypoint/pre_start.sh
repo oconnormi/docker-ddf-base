@@ -28,11 +28,6 @@ if [ -n "$SOLR_URL" ]; then
   props set solr.http.url $SOLR_URL $APP_HOME/etc/system.properties
 fi
 
-if [ -n "$APP_NODENAME" ]; then
-  echo "Cluster support enabled, Node Name: $APP_NODENAME"
-  props set org.codice.ddf.system.cluster.hostname $APP_NODENAME $APP_HOME/etc/system.properties
-fi
-
 # TODO: add more fine grained ldap configuration support
 if [ -n "$LDAP_HOST" ]; then
   echo "Remote LDAP HOST: $LDAP_HOST configured"
