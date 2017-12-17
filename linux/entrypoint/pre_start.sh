@@ -49,6 +49,11 @@ if [ -n "$HTTPS_PORT" ]; then
    props set org.codice.ddf.system.httpsPort $HTTPS_PORT $APP_HOME/etc/system.properties
 fi
 
+if [ -n "$JAVA_MAX_MEM" ]; then
+   sed -i "s/Xmx.* /Xmx${JAVA_MAX_MEM}g /g" $APP_HOME/bin/setenv
+   sed -i "s/Xmx.* /Xmx${JAVA_MAX_MEM}g /g" $APP_HOME/bin/setenv.bat
+fi
+
 # Copy any existing configuration files before starting the container
 if [ -d "$ENTRYPOINT_HOME/pre_config" ]; then
   echo "Copying configuration files from $ENTRYPOINT_HOME/pre_config to $APP_HOME"
