@@ -17,8 +17,7 @@ Base level docker image containing all dependencies for DDF
   * Supports External solr via `SOLR_URL=<external_solr_url>`
   * Supports Solr Cloud via `SOLR_ZK_HOSTS=<zookeeper_hosts_list>`
   * Supports external ldap via `LDAP_HOST=<hostname>`
-  * Supports Clustering via `APP_NODENAME=<node_name>`
-    * NodeName is used to identify the node within the cluster, useful for loadbalancing
+  * Supports Clustering via `APP_NODENAME=<node_name>` *DEPRECATED* use `CSR_SAN=<DNS|IP>:<value>,...` instead
   * Feature installation via `INSTALL_FEATURES=<feature1>;<feature2>;...`
   * Feature uninstallation via `UNINSTALL_FEATURES=<feature1>;<feature2>;...`
   * Startup apps via `STARTUP_APPS=<app1>;<app2>;...`
@@ -28,12 +27,28 @@ Base level docker image containing all dependencies for DDF
     * Place installation profiles under `$APP_HOME/etc/profiles/`
   * Enable DDF ssh endpoint via `$SSH_ENABLED=true`. *NOTE:* Disabled by default
   * Set Karaf client startup wait time via `$KARAF_CLIENT_DELAY`. Default is set at 10 seconds.
-  * Set Karaf client startup max retries via `$KARAF_CLIENT_RETRIES`. Default is set at 12 retries.   
+  * Set Karaf client startup max retries via `$KARAF_CLIENT_RETRIES`. Default is set at 12 retries.
+  * Can request certs from a remote cfssl based CA via `CA_REMOTE_URL=https://<host>:<port>`  
 
+### Customizing CSR
+
+Only applicable when using `CA_REMOTE_URL`
+
+| Variable                  | Description                                                      | Default                        |
+|:-------------------------:|:----------------------------------------------------------------:|:------------------------------:|
+| `CSR_KEY_ALGORITHM`       | Sets the key algorithm for the generated Certificate             | `rsa`                          |
+| `CSR_KEY_SIZE`            | Sets the key size for the generated Certificate                  | `2048`                         |
+| `CSR_SAN`                 | Sets the SAN value for the generated Certificate                 | `DNS:<hostname>,DNS:localhost` |
+| `CSR_COUNTRY`             | Sets the Country value for the generated Certificate             | `US`                           |
+| `CSR_LOCALITY`            | Sets the Locality value for the generated Certificate            | `Hursley`                      |
+| `CSR_ORGANIZATION`        | Sets the Organization value for the generated Certificate        | `DDF`                          |
+| `CSR_ORGANIZATIONAL_UNIT` | Sets the Organizational Unit value for the generated Certificate | `Dev`                          |
+| `CSR_STATE`               | Sets the State value for the generated Certificate               | `AZ`                           |
+| `CSR_PROFILE`             | Sets the type of certificate requested from the CA               | `server`                       |
 
 ## Requirements
 
-Any upstream containers must provide environment variables for:
+Any downstream containers must provide environment variables for:
 
 * APP_NAME - Name of application, used for branding by the entrypoint
 * APP_HOME - Home Directory for application installation (should have a bin directory as a child)
