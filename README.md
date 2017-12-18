@@ -48,6 +48,8 @@ For more complex extension, any number of executable files can be added to `$ENT
   * Common entry point for DDF based distributions
   * Automated certificate generation
   * Automated initial setup and configuration
+    *
+    * Can request certs from a remote cfssl based CA via `CA_REMOTE_URL=https://<host>:<port>`  
 
 ### Basic Configuration
 
@@ -59,13 +61,20 @@ To configure a solr cloud backend, provide a value to `SOLR_ZK_HOSTS=<zk host>,<
 
 To configure the ldap client, provide a value to `LDAP_HOST=<hostname>`. *NOTE:* Currently this is for testing purposes only, as it does not provide a means for configuring the protocol, port, username, or password used by the ldap client.
 
+To set the amount of memory allocated to the system set `JAVA_MAX_MEM`
+
 #### Advanced Configuration
 
 Copy (or mount) any necessary configuration files into `APP_HOME/etc/`
 
+Additionally any files mounted or copied to `$ENTRYPOINT_HOME/pre_config` will be copied under `APP_HOME` before the system is started
+
 ### Managing Apps and Features
 
 There are several methods for installing and uninstalling apps and features at startup.
+
+To use an install profile, provide a profile name to `INSTALL_PROFILE=<profile name>` this can be used to install any profiles registered with the installer, as well as custom json based profiles located under `APP_HOME/etc/profiles/`
+This method supports installing/uninstalling apps, features, and bundles.
 
 To install features, provide a list of features to `INSTALL_FEATURES=<feature name>;<feature name>;...`
 
@@ -104,6 +113,9 @@ Only applicable when using `CA_REMOTE_URL`
 | `CSR_STATE`               | Sets the State value for the generated Certificate               | `AZ`                           |
 | `CSR_PROFILE`             | Sets the type of certificate requested from the CA               | `server`                       |
 
+### Troubleshooting
+
+Sometimes during the startup process the system can take a while to fully initialize. This can be due to memory/cpu constraints. On underpowered systems it might be necessary to instruct the entrypoint script to wait longer and attempt more retries to connect to the system during the boot process. This can be accomplished by setting the `KARAF_CLIENT_DELAY=<time> (default: 10)` (in seconds) or `KARAF_CLIENT_RETRIES=<number> (default: 12)`
 
 ## Deprecated features
 * `APP_NODENAME=<node_name>` *DEPRECATED* use `CSR_SAN=<DNS|IP>:<value>,...` instead

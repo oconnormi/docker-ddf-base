@@ -11,6 +11,7 @@ fi
 $ENTRYPOINT_HOME/certs.sh
 
 props set org.codice.ddf.system.hostname $_app_hostname $APP_HOME/etc/system.properties
+props set org.codice.ddf.system.siteName $_app_hostname $APP_HOME/etc/system.properties
 props del localhost $APP_HOME/etc/users.properties
 props set $_app_hostname $_app_hostname,group,admin,manager,viewer,system-admin,system-history,systembundles $APP_HOME/etc/users.properties
 sed -i "s/localhost/$_app_hostname/" $APP_HOME/etc/users.attributes
@@ -31,26 +32,26 @@ fi
 # TODO: add more fine grained ldap configuration support
 if [ -n "$LDAP_HOST" ]; then
   echo "Remote LDAP HOST: $LDAP_HOST configured"
-  cp $ENTRYPOINT_HOME/config/ldap/*.config $APP_HOME/etc/
   props set org.codice.ddf.ldap.hostname $LDAP_HOST $APP_HOME/etc/system.properties
+  if [ -n "$LDAP_PORT" ]; then
+    props set org.codice.ddf.ldap.port $LDAP_PORT $APP_HOME/etc/system.properties
+  else
+    props set org.codice.ddf.ldap.port 1636 $APP_HOME/etc/system.properties
+  fi
 fi
 
-if [ -n "$STARTUP_APPS" ]; then
-  echo "Configuring startup apps"
-  if [[ $STARTUP_APPS == *";"* ]]; then
-  _appCount=$[$(echo $STARTUP_APPS | grep -o ";" | wc -l) + 1]
-  else
-    _appCount=1
-  fi
+if [ -n "$HTTPS_PORT" ]; then
+   props set org.codice.ddf.system.httpsPort $HTTPS_PORT $APP_HOME/etc/system.properties
+fi
 
-  echo "Adding $_appCount startup apps"
+if [ -n "$JAVA_MAX_MEM" ]; then
+   sed -i "s/Xmx.* /Xmx${JAVA_MAX_MEM}g /g" $APP_HOME/bin/setenv
+fi
 
-  for (( i=1; i<=$_appCount; i++ ))
-  do
-    _currentApp=$(echo $STARTUP_APPS | cut -d ";" -f $i)
-    echo "Adding: $_currentApp"
-    props set $_currentApp '' $APP_HOME/etc/org.codice.ddf.admin.applicationlist.properties
-  done
+# Copy any existing configuration files before starting the container
+if [ -d "$ENTRYPOINT_HOME/pre_config" ]; then
+  echo "Copying configuration files from $ENTRYPOINT_HOME/pre_config to $APP_HOME"
+  cp -r $ENTRYPOINT_HOME/pre_config/* $APP_HOME
 fi
 
 if [ -d "$ENTRYPOINT_HOME/pre" ]; then
@@ -62,9 +63,14 @@ if [ -d "$ENTRYPOINT_HOME/pre" ]; then
     done;
 fi
 
+# Enable SSH endpoint
+sed -i 's/#sshPort=8101/sshPort=8101/' ${APP_HOME}/etc/org.apache.karaf.shell.cfg
+
 echo "To run additional pre_start configurations mount a script to ${ENTRYPOINT_HOME}/pre_start_custom.sh"
 
 if [ -e "${ENTRYPOINT_HOME}/pre_start_custom.sh" ]; then
   echo "Pre-Start Custom Configuration Script found, running now..."
-  chmod 755 ${ENTRYPOINT_HOME}/pre_start_custom.sh && ${ENTRYPOINT_HOME}/pre_start_custom.sh
+  chmod 755 ${ENTRYPOINT_HOME}/pre_start_custom.sh
+  sleep 1
+  ${ENTRYPOINT_HOME}/pre_start_custom.sh
 fi
