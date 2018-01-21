@@ -3,8 +3,8 @@ IMAGE_NAME:=oconnormi/ddf-base
 # Get current system arch, used when building tags
 IMAGE_ARCH:=$(shell uname -m | sed 's/x86_64/amd64/')
 # manifest-tool download variables
-MANIFEST_TOOL_ARCH:=$(shell uname -m | sed 's/x86_64/amd64/')
-MANIFEST_TOOL_OS:=$(shell uname -s | awk '{print tolower($0)}')
+MANIFEST_TOOL_ARCH:=$(shell uname -m | sed 's/x86_64/amd64/' | sed 's/armv7l/armv7/')
+MANIFEST_TOOL_OS:=$(shell uname -s | tr '[:upper:]' '[:lower:]')
 MANIFEST_TOOL_VERSION:=0.7.0
 MANIFEST_TOOL_NAME=manifest-tool-$(MANIFEST_TOOL_OS)-$(MANIFEST_TOOL_ARCH)
 MANIFEST_TOOL_URL=https://github.com/estesp/manifest-tool/releases/download/v$(MANIFEST_TOOL_VERSION)/$(MANIFEST_TOOL_NAME)
