@@ -40,7 +40,7 @@ help: ## Display help.
 	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z_-]+:.*?## / {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)
 
 .PHONY: build
-build: $(BUILDS) $(LATEST_BUILDS) ## Build all docker containers
+build: $(BUILDS) $(LATEST_BUILDS) latest ## Build all docker containers
 
 .PHONY: $(BUILDS)
 $(BUILDS): ## Build specific image
@@ -51,14 +51,15 @@ $(BUILDS): ## Build specific image
 $(LATEST_BUILDS):
 	@echo "Building $(BUILD_TAG)"
 	@docker build -t $(BUILD_TAG) -f $(DOCKERFILE_PATH) $(DOCKER_BUILD_CONTEXT)
-# TODO: Fix logic for retagging latest-alpine-ARCH as latest-ARCH
-ifeq ($(OS), alpine)
-	@echo "Building latest"
-	@docker build -t $(IMAGE_NAME):latest-$(IMAGE_ARCH) -f $(DOCKERFILE_PATH) $(DOCKER_BUILD_CONTEXT)
-endif
+
+.PHONY: latest
+latest:
+	@echo "Building $@"
+	@docker build -t $(IMAGE_NAME):latest-$(IMAGE_ARCH) -f latest/linux/alpine/Dockerfile latest/linux
+
 
 .PHONY: push
-push: build $(PUSH_TARGETS) $(LATEST_PUSH_TARGETS) ## Push all images
+push: build $(PUSH_TARGETS) $(LATEST_PUSH_TARGETS) push_latest## Push all images
 
 .PHONY: $(PUSH_TARGETS)
 $(PUSH_TARGETS): ## Push specific image
@@ -69,14 +70,14 @@ $(PUSH_TARGETS): ## Push specific image
 $(LATEST_PUSH_TARGETS):
 	@echo "Pushing $(BUILD_TAG)"
 	@docker push $(BUILD_TAG)
-# TODO: Fix logic for retagging latest-alpine-ARCH as latest-ARCH
-ifeq '$(OS)' 'alpine'
+
+.PHONY: push_latest
+push_latest:
 	@echo "Pushing latest"
 	@docker push $(IMAGE_NAME):latest-$(IMAGE_ARCH)
-endif
 
 .PHONY: manifests
-manifests: $(MANIFEST_TARGETS) $(LATEST_MANIFEST_TARGETS) ## Create all manifests
+manifests: $(MANIFEST_TARGETS) $(LATEST_MANIFEST_TARGETS) manifest_latest ## Create all manifests
 
 .PHONY: $(MANIFEST_TARGETS)
 $(MANIFEST_TARGETS): .tools/manifest-tool ## Push manifest objects
@@ -93,14 +94,14 @@ $(LATEST_MANIFEST_TARGETS):
 		--platforms $(MANIFEST_PLATFORMS) \
 		--template $(MANIFEST_TEMPLATE) \
 		--target $(MANIFEST_NAME)
-# TODO: Fix logic for retagging latest-alpine-ARCH as latest-ARCH
-ifeq '$(OS)' 'alpine'
+
+.PHONY: manifest_latest
+manifest_latest:
 	@echo "Creating/Pushing manifest object for latest"
 	@.tools/manifest-tool push from-args \
 		--platforms $(MANIFEST_PLATFORMS) \
-		--template $(IMAGE_NAME):$(VERSION)-ARCH \
+		--template $(IMAGE_NAME):latest-ARCH \
 		--target $(IMAGE_NAME):latest
-endif
 
 .tools/manifest-tool: ## Install manifest-tool
 	@echo "Downloading manifest-tool $(MANIFEST_TOOL_NAME)"
