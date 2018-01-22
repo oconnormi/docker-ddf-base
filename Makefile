@@ -11,11 +11,11 @@ MANIFEST_TOOL_URL=https://github.com/estesp/manifest-tool/releases/download/v$(M
 
 # Find all Dockerfiles, excluding windows. then strip linux and Dockerfile from resulting path
 # this will help to make friendly build targets like $image_version/$image_os
-BUILDS:=$(sort $(shell find . -type f -name Dockerfile | grep -v "windows" | sed 's:linux/::' | sed 's:/Dockerfile::' | sed 's:\./::'))
-LATEST_BUILDS:=$(sort $(shell find -L ./latest -type f -name Dockerfile | grep -v "windows" | sed 's:linux/::' | sed 's:/Dockerfile::' | sed 's:\./::'))
-# Append 'push_' to each build in the $(BUILDS) list in order to create a list for each push target
-PUSH_TARGETS:=$(shell echo "$(BUILDS)" | sed 's/[^ ]* */push_&/g')
-LATEST_PUSH_TARGETS:=$(shell echo "$(LATEST_BUILDS)" | sed 's/[^ ]* */push_&/g')
+IMAGES:=$(sort $(shell find . -type f -name Dockerfile | grep -v "windows" | sed 's:linux/::' | sed 's:/Dockerfile::' | sed 's:\./::'))
+LATEST_IMAGES:=$(sort $(shell find -L ./latest -type f -name Dockerfile | grep -v "windows" | sed 's:linux/::' | sed 's:/Dockerfile::' | sed 's:\./::'))
+# Append 'push_' to each image in the $(IMAGES) list in order to create a list for each push target
+PUSH_TARGETS:=$(shell echo "$(IMAGES)" | sed 's/[^ ]* */push_&/g')
+LATEST_PUSH_TARGETS:=$(shell echo "$(LATEST_IMAGES)" | sed 's/[^ ]* */push_&/g')
 # Remove everything after the first '/' and remove any 'push_' prefix in order to find the version number
 VERSION=$(shell echo $@ | sed 's:/.*::' | sed 's/push_//' | sed 's/manifest_//')
 # Compute docker build context based on the version
@@ -27,8 +27,8 @@ DOCKERFILE_PATH=$(DOCKER_BUILD_CONTEXT)/$(OS)/Dockerfile
 # Compute Build Tag
 BUILD_TAG=$(IMAGE_NAME):$(VERSION)-$(OS)-$(IMAGE_ARCH)
 # manifest-tool input variables
-MANIFEST_TARGETS:=$(shell echo "$(BUILDS)" | sed 's/[^ ]* */manifest_&/g')
-LATEST_MANIFEST_TARGETS:=$(shell echo "$(LATEST_BUILDS)" | sed 's/[^ ]* */manifest_&/g')
+MANIFEST_TARGETS:=$(shell echo "$(IMAGES)" | sed 's/[^ ]* */manifest_&/g')
+LATEST_MANIFEST_TARGETS:=$(shell echo "$(LATEST_IMAGES)" | sed 's/[^ ]* */manifest_&/g')
 MANIFEST_PLATFORMS:=linux/amd64
 MANIFEST_TEMPLATE=$(IMAGE_NAME):$(VERSION)-$(OS)-ARCH
 MANIFEST_NAME=$(IMAGE_NAME):$(VERSION)-$(OS)
@@ -39,16 +39,16 @@ MANIFEST_NAME=$(IMAGE_NAME):$(VERSION)-$(OS)
 help: ## Display help.
 	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z_-]+:.*?## / {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)
 
-.PHONY: build
-build: $(BUILDS) $(LATEST_BUILDS) latest ## Build all docker containers
+.PHONY: images
+images: $(IMAGES) $(LATEST_IMAGES) latest ## Build all docker containers
 
-.PHONY: $(BUILDS)
-$(BUILDS): ## Build specific image
+.PHONY: $(IMAGES)
+$(IMAGES): ## Build specific image
 	@echo "Building $(BUILD_TAG)"
 	@docker build -t $(BUILD_TAG) -f $(DOCKERFILE_PATH) $(DOCKER_BUILD_CONTEXT)
 
-.PHONY: $(LATEST_BUILDS)
-$(LATEST_BUILDS):
+.PHONY: $(LATEST_IMAGES)
+$(LATEST_IMAGES):
 	@echo "Building $(BUILD_TAG)"
 	@docker build -t $(BUILD_TAG) -f $(DOCKERFILE_PATH) $(DOCKER_BUILD_CONTEXT)
 
@@ -59,7 +59,7 @@ latest:
 
 
 .PHONY: push
-push: build $(PUSH_TARGETS) $(LATEST_PUSH_TARGETS) push_latest## Push all images
+push: images $(PUSH_TARGETS) $(LATEST_PUSH_TARGETS) push_latest ## Push all images
 
 .PHONY: $(PUSH_TARGETS)
 $(PUSH_TARGETS): ## Push specific image
