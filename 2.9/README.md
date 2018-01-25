@@ -30,7 +30,7 @@ This image is meant to be the basis for any ddf based image.
 It packages the dependencies and an entrypoint script for use with any ddf based application
 
 ```Dockerfile
-FROM oconnormi/ddf-base
+FROM codice/ddf-base
 
 ENV APP_NAME=<app_name>
 ENV APP_HOME=<app_home>

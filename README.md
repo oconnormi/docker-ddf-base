@@ -14,7 +14,7 @@ Any downstream containers must provide environment variables for:
 * APP_LOG - Location of the application log file
 
 ```Dockerfile
-FROM oconnormi/ddf-base
+FROM codice/ddf-base
 
 ENV APP_NAME=<app_name>
 ENV APP_HOME=<app_home>
@@ -48,7 +48,6 @@ For more complex extension, any number of executable files can be added to `$ENT
   * Common entry point for DDF based distributions
   * Automated certificate generation
   * Automated initial setup and configuration
-    *
     * Can request certs from a remote cfssl based CA via `CA_REMOTE_URL=https://<host>:<port>`  
 
 ### Basic Configuration
