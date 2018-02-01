@@ -1,4 +1,4 @@
-FROM anapsix/alpine-java:jdk
+FROM anapsix/alpine-java:8_jdk
 MAINTAINER oconnormi
 
 ENV ENTRYPOINT_HOME=/opt/entrypoint
