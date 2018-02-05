@@ -9,7 +9,13 @@ fi
 
 echo "Starting ${APP_NAME}"
 
-$APP_HOME/bin/start
+if [ -n "$HTTPS_PORT" ]; then
+  if [ "$HTTPS_PORT" -lt "1024" ]; then
+    sudo $APP_HOME/bin/start
+  else
+    $APP_HOME/bin/start
+  fi
+fi
 
 sleep 2
 
