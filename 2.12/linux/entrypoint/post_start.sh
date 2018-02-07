@@ -42,6 +42,10 @@ if [ -n "$LDAP_HOST" ]; then
   cp $ENTRYPOINT_HOME/config/ldap/*.config ${_app_etc}
 fi
 
+if [ -n "$INGEST_DATA" ]; then
+  $ENTRYPOINT_HOME/ingest_data.sh
+fi
+
 if [ -d "$ENTRYPOINT_HOME/post" ]; then
   for f in "$ENTRYPOINT_HOME/post/*";
     do
