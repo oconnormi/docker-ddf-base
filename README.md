@@ -112,6 +112,26 @@ Only applicable when using `CA_REMOTE_URL`
 | `CSR_STATE`               | Sets the State value for the generated Certificate               | `AZ`                           |
 | `CSR_PROFILE`             | Sets the type of certificate requested from the CA               | `server`                       |
 
+### Seeding Catalog Data
+
+To ingest data automatically after the system is running, the `INGEST_DATA` environment variable can be used.
+It can take a comma separated list of locations to retrieve archives of metadata from: `https://foo.bar/baz.zip,http://fake.com/foo.tar.gz`
+Supported archive types are:
+- `zip`
+- `tar`
+- `tar.gz`
+- `tgz`
+
+Supported protocols are:
+- `http://`
+- `https://`
+- `file://`
+
+Optionally a transformer for each set of data can be specified by adding `|<transformerName>` after each item in the list
+
+Full Example:
+`INGEST_DATA=https://foo.bar/baz.zip|xml,http://fake.com/foo.tar.gz|geojson,file:///some/local/file.zip`
+
 ### Troubleshooting
 
 Sometimes during the startup process the system can take a while to fully initialize. This can be due to memory/cpu constraints. On underpowered systems it might be necessary to instruct the entrypoint script to wait longer and attempt more retries to connect to the system during the boot process. This can be accomplished by setting the `KARAF_CLIENT_DELAY=<time> (default: 10)` (in seconds) or `KARAF_CLIENT_RETRIES=<number> (default: 12)`
