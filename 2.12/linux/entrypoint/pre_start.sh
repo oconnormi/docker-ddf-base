@@ -31,6 +31,17 @@ if [ -n "$LDAP_HOST" ]; then
   props set ${_ldap_port_key} ${_ldap_port} ${_system_properties_file}
 fi
 
+if [ -n "$IDP_URL" ]; then
+  echo "IdP URL provided: $IDP_URL"
+  if [ ! -f ${_idp_client_config_file} ]; then
+    touch ${_idp_client_config_file}
+  fi
+  props set ${_idp_metadata_key} ${IDP_URL} ${_idp_client_config_file}
+  props set ${_idp_service_pid_key} ${_idp_service_pid_value} ${_idp_client_config_file}
+  props set ${_idp_useragent_key} ${_idp_useragent_value} ${_idp_client_config_file}
+fi
+
+
 if [ -n "$HTTPS_PORT" ]; then
    props set ${_system_https_port_key} ${HTTPS_PORT} ${_system_properties_file}
 fi

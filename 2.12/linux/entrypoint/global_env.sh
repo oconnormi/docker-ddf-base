@@ -18,6 +18,7 @@ _karaf_shell_config_file=${_app_etc}/org.apache.karaf.shell.cfg
 _setenv_file=${_app_bin}/setenv
 _server_keystore_file=${_app_keystores}/serverKeystore.jks
 _server_truststore_file=${_app_keystores}/serverTruststore.jks
+_idp_client_config_file=${_app_etc}/org.codice.ddf.security.idp.client.IdpMetadata.config
 #####################################
 
 ###### Property Key Constants ######
@@ -33,6 +34,12 @@ _solr_data_key="solr.data.dir"
 # Ldap
 _ldap_hostname_key="org.codice.ddf.ldap.hostname"
 _ldap_port_key="org.codice.ddf.ldap.port"
+# IdP
+_idp_metadata_key="metadata"
+_idp_service_pid_key="service.pid"
+_idp_service_pid_value="org.codice.ddf.security.idp.client.IdpMetadata"
+_idp_useragent_key="userAgentCheck"
+_idp_useragent_value="true"
 ####################################
 
 ###### Client Settings ######

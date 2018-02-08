@@ -132,6 +132,10 @@ Optionally a transformer for each set of data can be specified by adding `|<tran
 Full Example:
 `INGEST_DATA=https://foo.bar/baz.zip|xml,http://fake.com/foo.tar.gz|geojson,file:///some/local/file.zip`
 
+### Configuring IdP Client
+
+To configure the IdP client metadata location set the `IDP_URL` environment variable. For example: `IDP_URL=https://some.host/services/idp/login/metadata`
+
 ### Troubleshooting
 
 Sometimes during the startup process the system can take a while to fully initialize. This can be due to memory/cpu constraints. On underpowered systems it might be necessary to instruct the entrypoint script to wait longer and attempt more retries to connect to the system during the boot process. This can be accomplished by setting the `KARAF_CLIENT_DELAY=<time> (default: 10)` (in seconds) or `KARAF_CLIENT_RETRIES=<number> (default: 12)`
