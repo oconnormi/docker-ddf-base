@@ -10,7 +10,13 @@ do
 done
 echo -e "\nLog file found, continuing..."
 
-${_client} "while { (bundle:list -t 0 | grep -i \"active.*DDF\s::\sadmin\s::\sUI\" | tac) isEmpty } { echo -n \". \"; sleep 1 }; while {(\"3\" equals ((bundle:list -t 0 | grep -i -v \"active\" | grep -i \"hosts:\" | wc -l | tac) trim) | tac) equals \"false\"} { echo -n \". \"; sleep 1 }; echo \"\"; echo \"System Ready\""
+_wfrStatus=1
+while [ ${_wfrStatus} -ne 0 ]
+do
+  echo "Checking if ${APP_NAME} is ready..."
+  ${_client} "while { (bundle:list -t 0 | grep -i \"active.*DDF\s::\sadmin\s::\sUI\" | tac) isEmpty } { echo -n \". \"; sleep 1 }; while {(\"3\" equals ((bundle:list -t 0 | grep -i -v \"active\" | grep -i \"hosts:\" | wc -l | tac) trim) | tac) equals \"false\"} { echo -n \". \"; sleep 1 }; echo \"\"; echo \"System Ready\""
+  _wfrStatus=$?
+done
 
 if [ -n "$INSTALL_PROFILE" ]; then
   ${_client} profile:install ${INSTALL_PROFILE}
