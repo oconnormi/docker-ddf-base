@@ -26,6 +26,11 @@ _idp_client_config_file=${_app_etc}/org.codice.ddf.security.idp.client.IdpMetada
 _system_hostname_key="org.codice.ddf.system.hostname"
 _system_sitename_key="org.codice.ddf.system.siteName"
 _system_https_port_key="org.codice.ddf.system.httpsPort"
+_system_http_port_key="org.codice.ddf.system.httpPort"
+_system_internal_http_port="org.codice.ddf.system.internalHttpPort"
+_system_internal_https_port="org.codice.ddf.system.internalHttpsPort"
+_default_http_port=8181
+_default_https_port=8993
 # Solr
 _solr_client_key="solr.client"
 _solr_http_url_key="solr.http.url"

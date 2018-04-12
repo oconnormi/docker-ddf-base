@@ -1,3 +1,9 @@
+FROM matejak/argbash
+
+COPY argbash-templates/* /work/
+ADD "https://raw.githubusercontent.com/oconnormi/dev-tools/master/templates/ddf-create-cdm.m4" /work/create-cdm.m4
+RUN ./build.sh
+
 FROM anapsix/alpine-java:8_jdk
 MAINTAINER oconnormi
 
@@ -12,5 +18,6 @@ RUN apk add --no-cache curl openssl \
     && chmod 755 /usr/local/bin/jq
 
 COPY entrypoint/* $ENTRYPOINT_HOME/
+COPY --from=0 /out/cmd/* /usr/local/bin/
 
 ENTRYPOINT ["/bin/bash", "-c", "$ENTRYPOINT_HOME/entrypoint.sh"]

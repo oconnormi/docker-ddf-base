@@ -41,14 +41,37 @@ if [ -n "$IDP_URL" ]; then
   props set ${_idp_useragent_key} ${_idp_useragent_value} ${_idp_client_config_file}
 fi
 
-
 if [ -n "$HTTPS_PORT" ]; then
    props set ${_system_https_port_key} ${HTTPS_PORT} ${_system_properties_file}
+fi
+
+if [ -n "$HTTP_PORT" ]; then
+  props set ${_system_http_port_key} ${HTTP_PORT} ${_system_properties_file}
+fi
+
+if [ -n "$BASE_URL_HTTP_PORT" ]; then
+  props set ${_system_https_port_key} ${BASE_URL_HTTP_PORT} ${_system_properties_file}
+  props set ${_system_internal_http_port} ${_default_http_port} ${_system_properties_file}
+fi
+
+if [ -n "$BASE_URL_HTTPS_PORT" ]; then
+  props set ${_system_https_port_key} ${BASE_URL_HTTPS_PORT} ${_system_properties_file}
+  props set ${_system_internal_https_port} ${_default_https_port} ${_system_properties_file}
 fi
 
 if [ -n "$JAVA_MAX_MEM" ]; then
    sed -i "s/Xmx.* /Xmx${JAVA_MAX_MEM}g /g" ${_setenv_file}
 fi
+
+if [ "${SECURITY_MANAGER_DISABLED}" = true ]; then
+  echo "SECURITY_MANAGER_DISABLED set to true, disabling security manager"
+  props del policy.provider ${_system_properties_file}
+  props del java.security.manager ${_system_properties_file}
+  props del java.security.policy ${_system_properties_file}
+  props del proGrade.getPermissions.override ${_system_properties_file}
+fi
+
+
 
 # Copy any existing configuration files before starting the container
 if [ -d "$ENTRYPOINT_HOME/pre_config" ]; then

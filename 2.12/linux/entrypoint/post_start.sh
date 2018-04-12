@@ -52,6 +52,14 @@ if [ -n "$INGEST_DATA" ]; then
   $ENTRYPOINT_HOME/ingest_data.sh
 fi
 
+if [ -n "$SEED_CONTENT" ]; then
+  $ENTRYPOINT_HOME/seed_content.sh
+fi
+
+if [ -n "$CDM" ]; then
+  $ENTRYPOINT_HOME/setup_cdm.sh
+fi
+
 if [ -d "$ENTRYPOINT_HOME/post" ]; then
   for f in "$ENTRYPOINT_HOME/post/*";
     do

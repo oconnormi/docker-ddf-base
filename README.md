@@ -112,7 +112,11 @@ Only applicable when using `CA_REMOTE_URL`
 | `CSR_STATE`               | Sets the State value for the generated Certificate               | `AZ`                           |
 | `CSR_PROFILE`             | Sets the type of certificate requested from the CA               | `server`                       |
 
-### Seeding Catalog Data
+### Seeding Data
+
+It is possible to automatically seed the system with data using multiple methods. Both catalog metadata and content can be preloaded from local and remote sources. This is mostly useful for testing and demonstration purposes.
+
+#### Seeding Catalog Metadata
 
 To ingest data automatically after the system is running, the `INGEST_DATA` environment variable can be used.
 It can take a comma separated list of locations to retrieve archives of metadata from: `https://foo.bar/baz.zip,http://fake.com/foo.tar.gz`
@@ -131,6 +135,35 @@ Optionally a transformer for each set of data can be specified by adding `|<tran
 
 Full Example:
 `INGEST_DATA=https://foo.bar/baz.zip|xml,http://fake.com/foo.tar.gz|geojson,file:///some/local/file.zip`
+
+#### Seeding Content Data
+
+To pre-load and index content automatically after the sytem is running, the `SEED_CONTENT` environment variable can be used.
+It can take a comma separated list of locations to retrieve archives of data (these can include mixed types of data): `https://foo.bar/data.zip,http:fake.com/moreData.tar.gz`
+
+Supported archive types are:
+- `zip`
+- `tar`
+- `tar.gz`
+- `tgz`
+
+Supported protocols are:
+- `http://`
+- `https://`
+- `file://`
+
+Full Example:
+`SEED_CONTENT=https://foo.bar/data.zip,file:///some/directory/moreData.tar.gz`
+
+
+### Configuring Content Directory Monitors
+
+Content directory monitor can be used to watch a directory for files to be stored and indexed. It is possible to create an arbitrary number of monitored directories using the `CDM` environment variable.
+
+The `CDM` environment variable supports specifying all properties for each CDM instance like `<directory>|<processing_mechanism>|<threads>|<readlock>` where `<directory>` is the only required parameter.
+
+Full example:
+`CDM=/monitor|in_place|1|500,/foo|delete|1|200,/bar`
 
 ### Configuring IdP Client
 

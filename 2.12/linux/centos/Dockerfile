@@ -1,3 +1,9 @@
+FROM matejak/argbash
+
+COPY argbash-templates/* /work/
+ADD "https://raw.githubusercontent.com/oconnormi/dev-tools/master/templates/ddf-create-cdm.m4" /work/create-cdm.m4
+RUN ./build.sh
+
 FROM centos:centos7
 MAINTAINER oconnormi
 
@@ -23,6 +29,7 @@ RUN curl -OL "http://download.oracle.com/otn-pub/java/jdk/$JDK_VERSION-$JDK_BUIL
 # Stage Entrypoint scripts
 RUN mkdir -p $ENTRYPOINT_HOME
 COPY entrypoint/* $ENTRYPOINT_HOME/
+COPY --from=0 /out/cmd/* /usr/local/bin/
 
 RUN curl -L https://github.com/oconnormi/props/releases/download/v0.2.0/props_linux_386 -o /usr/local/bin/props \
     && chmod 755 /usr/local/bin/props
