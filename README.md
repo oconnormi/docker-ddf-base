@@ -92,6 +92,23 @@ If custom keystores are not used the startup process will generate certificates 
 Additionally Subject Alternative Names will be added to the certificate for `DNS:$APP_HOSTNAME(if unset will use `hostname -f`),DNS:localhost,IP:127.0.0.1`.
 To add additional SAN values use the `CSR_SAN=<DNS|IP>:<value>,...` environment variable.
 
+#### Import Existing Certificates
+
+Certificates can be imported at runtime by passing the certificate chain in the `SSL_CERT` environment variable. The chain must be in the format:
+
+```
+-----BEGIN RSA PRIVATE KEY-----
+<KEY>
+-----END RSA PRIVATE KEY-----
+-----BEGIN CERTIFICATE-----
+<CERT>
+-----END CERTIFICATE-----
+-----BEGIN CERTIFICATE-----
+<CA_CERT>
+-----END CERTIFICATE-----```
+
+*Warning:* This should not be used in a production environment as it is insecure. Anyone with access to the docker daemon will be able to retrieve this from the environment.
+
 #### Remote CA Support
 
 Certificates can also be requested from a remote [cffsl](https://github.com/cloudflare/cfssl) based CA at startup by using the `REMOTE_CA_URL=https://<host>:<port>`. By default this will request a certificate from the remote CA that looks identical to the ones generated from the local CA. The remote CA mode provides additional configuration options for customizing the values used in the certificate.
