@@ -105,7 +105,8 @@ Certificates can be imported at runtime by passing the certificate chain in the 
 -----END CERTIFICATE-----
 -----BEGIN CERTIFICATE-----
 <CA_CERT>
------END CERTIFICATE-----```
+-----END CERTIFICATE-----
+```
 
 *Warning:* This should not be used in a production environment as it is insecure. Anyone with access to the docker daemon will be able to retrieve this from the environment.
 
