@@ -3,8 +3,8 @@ MAINTAINER oconnormi
 
 # Environment Variables
 # JAVA Environment Variables
-ENV JDK_VERSION=8u161 \
-    JDK_BUILD_VERSION=b12 \
+ENV JDK_VERSION=8u171 \
+    JDK_BUILD_VERSION=b11 \
     JAVA_HOME=/usr/java/latest \
     ENTRYPOINT_HOME=/opt/entrypoint
 
@@ -13,7 +13,7 @@ RUN yum update -y \
     && yum install -y unzip openssl
 
 # Download Oracle Java
-RUN curl -OL "http://download.oracle.com/otn-pub/java/jdk/$JDK_VERSION-$JDK_BUILD_VERSION/2f38c3b165be4555a1fa6e98c45e0808/jdk-$JDK_VERSION-linux-x64.rpm" -H 'Cookie: oraclelicense=accept-securebackup-cookie' \
+RUN curl -OL "http://download.oracle.com/otn-pub/java/jdk/$JDK_VERSION-$JDK_BUILD_VERSION/512cd62ec5174c3487ac17c61aaa89e8/jdk-$JDK_VERSION-linux-x64.rpm" -H 'Cookie: oraclelicense=accept-securebackup-cookie' \
     && yum install -y jdk-$JDK_VERSION-linux-x64.rpm \
     && yum clean all \
     && rm -f jdk-$JDK_VERSION-linux-x64.rpm \
