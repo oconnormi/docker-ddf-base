@@ -60,7 +60,7 @@ if [ -n "$BASE_URL_HTTPS_PORT" ]; then
 fi
 
 if [ -n "$JAVA_MAX_MEM" ]; then
-   sed -i "s/Xmx.* /Xmx${JAVA_MAX_MEM}g /g" ${_setenv_file}
+   sed -i "s/Xmx.*g /Xmx${JAVA_MAX_MEM}g /g" ${_setenv_file}
 fi
 
 if [ "${SECURITY_MANAGER_DISABLED}" = true ]; then

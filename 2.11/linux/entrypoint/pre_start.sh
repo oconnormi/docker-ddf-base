@@ -45,7 +45,7 @@ if [ -n "$HTTPS_PORT" ]; then
 fi
 
 if [ -n "$JAVA_MAX_MEM" ]; then
-   sed -i "s/Xmx.* /Xmx${JAVA_MAX_MEM}g /g" $APP_HOME/bin/setenv
+   sed -i "s/Xmx.*g /Xmx${JAVA_MAX_MEM}g /g" $APP_HOME/bin/setenv
 fi
 
 # Copy any existing configuration files before starting the container
