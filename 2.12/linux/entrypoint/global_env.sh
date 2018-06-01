@@ -23,6 +23,7 @@ _idp_client_config_file=${_app_etc}/org.codice.ddf.security.idp.client.IdpMetada
 
 ###### Property Key Constants ######
 # Basic System
+_system_protocol_key="org.codice.ddf.system.protocol"
 _system_hostname_key="org.codice.ddf.system.hostname"
 _system_sitename_key="org.codice.ddf.system.siteName"
 _system_https_port_key="org.codice.ddf.system.httpsPort"
@@ -51,4 +52,76 @@ _idp_useragent_value="true"
 _karaf_client_delay=${KARAF_CLIENT_DELAY:=10}
 _karaf_client_retries=${KARAF_CLIENT_RETRIES:=12}
 _client="${_app_bin}/client -r ${_karaf_client_retries} -d ${_karaf_client_delay}"
+#############################
+
+
+###### Functions ############
+
+#
+# isReady can be used to check the readiness of the system
+# returns 1 if system is not ready
+# returns 0 if system is ready
+#
+function isReady {
+  local proto=$(props get ${_system_protocol_key} ${_system_properties_file})
+  local host=$(props get ${_system_hostname_key} ${_system_properties_file})
+  local port=$(props get ${_system_https_port_key} ${_system_properties_file})
+  local context=/readiness-check
+  local url="${proto}${host}:${port}${context}"
+  if [ $(curl -k -s -o /dev/null -w "%{http_code}" "${url}") != "200" ]; then
+    return 1
+  fi
+  return 0
+}
+
+typeset -xf isReady
+
+#
+# waitForReady can be used to wait until system readiness is reached.
+# usefull for situations where a setup step needs to wait until after the system
+# is fully running before proceeding
+#
+function waitForReady {
+  printf "\nWaiting for system readiness..."
+  until isReady; do
+    printf "."
+    sleep 5;
+  done
+  printf "\n"
+}
+
+typeset -xf waitForReady
+
+#
+# isHealthy can be used to check the health of the system
+# returns 1 if system is not healthy
+# returns 0 if system is healthy
+#
+function isHealthy {
+  local proto=$(props get ${_system_protocol_key} ${_system_properties_file})
+  local host=$(props get ${_system_hostname_key} ${_system_properties_file})
+  local port=$(props get ${_system_https_port_key} ${_system_properties_file})
+  local context=/health-check
+  local url="${proto}${host}:${port}${context}"
+  if [ $(curl -k -s -o /dev/null -w "%{http_code}" "${url}") != "200" ]; then
+    return 1
+  fi
+  return 0
+}
+
+typeset -xf isHealthy
+
+#
+# waitForHealthy can be used to wait until is healthy.
+#
+function waitForHealthy {
+  printf "\nWaiting for system readiness..."
+  until isHealthy; do
+    printf "."
+    sleep 5;
+  done
+  printf "\n"
+}
+
+typeset -xf waitForHealthy
 #############################
