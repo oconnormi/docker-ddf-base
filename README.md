@@ -30,6 +30,24 @@ Pre-start steps are all performed prior to the ddf instance being started, while
 
 Both of these sets of steps can be extended easily using the following methods.
 
+### Customizing Readiness Check
+
+There are a few protections in place in this image to help get timings right when performing installations. The default approach checks if all bundles are started before considering the system "ready"
+By default there are a few bundles that are excluded from this check. These defaults can be overriden via the `READINESS_EXCLUSIONS` environment variable
+
+The default exclusions are: `Apache Karaf :: Features :: Extension, Hosts|DDF :: Platform :: OSGi :: Conditions, Hosts|Apache Karaf :: Shell :: Console, Hosts|DDF :: Platform :: PaxWeb :: Jetty Config, Hosts`
+Exclusions must be a string that is separated by `|` characters for each entry
+Downstream images that need a custom set of exclusions should override via their `Dockerfile`:
+
+```Dockerfile
+...
+ENV READINESS_EXCLUSIONS="some bundle name|another bundle name|yet another bundle name"
+...
+```
+
+Additionally for distributions that make use of the fabric8 health/readiness endpoint the experimental health checks can be used instead of the older approach by setting `EXPERIMENTAL_READINESS_CHECKS_ENABLED=true`
+*Note:* This requires that the `fabric8-karaf-checks` feature is installed as part of the distribution's boot features
+
 ### Pre-Start Extensions
 
 For simple extension, add a script: `$ENTRYPOINT_HOME/pre_start_custom.sh`
