@@ -54,6 +54,10 @@ _karaf_client_retries=${KARAF_CLIENT_RETRIES:=12}
 _client="${_app_bin}/client -r ${_karaf_client_retries} -d ${_karaf_client_delay}"
 #############################
 
+###### Readiness Check Settings #######
+_experimental_checks_enabled=${EXPERIMENTAL_READINESS_CHECKS_ENABLED:=false}
+# The following bundles are excluded from the legacy 'lna' based ready check
+_legacy_wfr_exclusions=${READINESS_EXCLUSIONS:="Apache Karaf :: Features :: Extension, Hosts|DDF :: Platform :: OSGi :: Conditions, Hosts|Apache Karaf :: Shell :: Console, Hosts|DDF :: Platform :: PaxWeb :: Jetty Config, Hosts"}
 
 ###### Functions ############
 
@@ -63,15 +67,22 @@ _client="${_app_bin}/client -r ${_karaf_client_retries} -d ${_karaf_client_delay
 # returns 0 if system is ready
 #
 function isReady {
-  local proto=$(props get ${_system_protocol_key} ${_system_properties_file})
-  local host=$(props get ${_system_hostname_key} ${_system_properties_file})
-  local port=$(props get ${_system_https_port_key} ${_system_properties_file})
-  local context=/readiness-check
-  local url="${proto}${host}:${port}${context}"
-  if [ $(curl -k -s -o /dev/null -w "%{http_code}" "${url}") != "200" ]; then
-    return 1
+  if [ "${_experimental_checks_enabled}" = "true" ]; then
+    local proto=$(props get ${_system_protocol_key} ${_system_properties_file})
+    local host=$(props get ${_system_hostname_key} ${_system_properties_file})
+    local port=$(props get ${_system_https_port_key} ${_system_properties_file})
+    local context=/readiness-check
+    local url="${proto}${host}:${port}${context}"
+    if [ $(curl -k -s -o /dev/null -w "%{http_code}" "${url}") != "200" ]; then
+      return 1
+    fi
+    return 0
+  else
+    if [ $(${_client} "lna" | tail -n +4 | grep -Ev "${_legacy_wfr_exclusions}" | wc -l | awk '{$1=$1};1') != "0" ]; then
+      return 1
+    fi
+    return 0
   fi
-  return 0
 }
 
 typeset -xf isReady
