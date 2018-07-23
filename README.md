@@ -30,6 +30,24 @@ Pre-start steps are all performed prior to the ddf instance being started, while
 
 Both of these sets of steps can be extended easily using the following methods.
 
+### Customizing Readiness Check
+
+There are a few protections in place in this image to help get timings right when performing installations. The default approach checks if all bundles are started before considering the system "ready"
+By default there are a few bundles that are excluded from this check. These defaults can be overriden via the `READINESS_EXCLUSIONS` environment variable
+
+The default exclusions are: `Apache Karaf :: Features :: Extension, Hosts|DDF :: Platform :: OSGi :: Conditions, Hosts|Apache Karaf :: Shell :: Console, Hosts|DDF :: Platform :: PaxWeb :: Jetty Config, Hosts`
+Exclusions must be a string that is separated by `|` characters for each entry
+Downstream images that need a custom set of exclusions should override via their `Dockerfile`:
+
+```Dockerfile
+...
+ENV READINESS_EXCLUSIONS="some bundle name|another bundle name|yet another bundle name"
+...
+```
+
+Additionally for distributions that make use of the fabric8 health/readiness endpoint the experimental health checks can be used instead of the older approach by setting `EXPERIMENTAL_READINESS_CHECKS_ENABLED=true`
+*Note:* This requires that the `fabric8-karaf-checks` feature is installed as part of the distribution's boot features
+
 ### Pre-Start Extensions
 
 For simple extension, add a script: `$ENTRYPOINT_HOME/pre_start_custom.sh`
@@ -92,6 +110,24 @@ If custom keystores are not used the startup process will generate certificates 
 Additionally Subject Alternative Names will be added to the certificate for `DNS:$APP_HOSTNAME(if unset will use `hostname -f`),DNS:localhost,IP:127.0.0.1`.
 To add additional SAN values use the `CSR_SAN=<DNS|IP>:<value>,...` environment variable.
 
+#### Import Existing Certificates
+
+Certificates can be imported at runtime by passing the certificate chain in the `SSL_CERT` environment variable. The chain must be in the format:
+
+```
+-----BEGIN RSA PRIVATE KEY-----
+<KEY>
+-----END RSA PRIVATE KEY-----
+-----BEGIN CERTIFICATE-----
+<CERT>
+-----END CERTIFICATE-----
+-----BEGIN CERTIFICATE-----
+<CA_CERT>
+-----END CERTIFICATE-----
+```
+
+*Warning:* This should not be used in a production environment as it is insecure. Anyone with access to the docker daemon will be able to retrieve this from the environment.
+
 #### Remote CA Support
 
 Certificates can also be requested from a remote [cffsl](https://github.com/cloudflare/cfssl) based CA at startup by using the `REMOTE_CA_URL=https://<host>:<port>`. By default this will request a certificate from the remote CA that looks identical to the ones generated from the local CA. The remote CA mode provides additional configuration options for customizing the values used in the certificate.
@@ -111,6 +147,63 @@ Only applicable when using `CA_REMOTE_URL`
 | `CSR_ORGANIZATIONAL_UNIT` | Sets the Organizational Unit value for the generated Certificate | `Dev`                          |
 | `CSR_STATE`               | Sets the State value for the generated Certificate               | `AZ`                           |
 | `CSR_PROFILE`             | Sets the type of certificate requested from the CA               | `server`                       |
+
+### Seeding Data
+
+It is possible to automatically seed the system with data using multiple methods. Both catalog metadata and content can be preloaded from local and remote sources. This is mostly useful for testing and demonstration purposes.
+
+#### Seeding Catalog Metadata
+
+To ingest data automatically after the system is running, the `INGEST_DATA` environment variable can be used.
+It can take a comma separated list of locations to retrieve archives of metadata from: `https://foo.bar/baz.zip,http://fake.com/foo.tar.gz`
+Supported archive types are:
+- `zip`
+- `tar`
+- `tar.gz`
+- `tgz`
+
+Supported protocols are:
+- `http://`
+- `https://`
+- `file://`
+
+Optionally a transformer for each set of data can be specified by adding `|<transformerName>` after each item in the list
+
+Full Example:
+`INGEST_DATA=https://foo.bar/baz.zip|xml,http://fake.com/foo.tar.gz|geojson,file:///some/local/file.zip`
+
+#### Seeding Content Data
+
+To pre-load and index content automatically after the sytem is running, the `SEED_CONTENT` environment variable can be used.
+It can take a comma separated list of locations to retrieve archives of data (these can include mixed types of data): `https://foo.bar/data.zip,http:fake.com/moreData.tar.gz`
+
+Supported archive types are:
+- `zip`
+- `tar`
+- `tar.gz`
+- `tgz`
+
+Supported protocols are:
+- `http://`
+- `https://`
+- `file://`
+
+Full Example:
+`SEED_CONTENT=https://foo.bar/data.zip,file:///some/directory/moreData.tar.gz`
+
+
+### Configuring Content Directory Monitors
+
+Content directory monitor can be used to watch a directory for files to be stored and indexed. It is possible to create an arbitrary number of monitored directories using the `CDM` environment variable.
+
+The `CDM` environment variable supports specifying all properties for each CDM instance like `<directory>|<processing_mechanism>|<threads>|<readlock>` where `<directory>` is the only required parameter.
+
+Full example:
+`CDM=/monitor|in_place|1|500,/foo|delete|1|200,/bar`
+
+### Configuring IdP Client
+
+To configure the IdP client metadata location set the `IDP_URL` environment variable. For example: `IDP_URL=https://some.host/services/idp/login/metadata`
 
 ### Troubleshooting
 
