@@ -9,12 +9,10 @@ fi
 
 echo "Starting ${APP_NAME}"
 
-if [ -n "$HTTPS_PORT" ]; then
-  if [ "$HTTPS_PORT" -lt "1024" ] && [ $EUID -ne 0 ]; then
-    sudo $APP_HOME/bin/start
-  else
-    $APP_HOME/bin/start
-  fi
+if [ -n "$HTTPS_PORT" ] && [ "$HTTPS_PORT" -lt "1024" ] && [ $EUID -ne 0 ]; then
+  sudo $APP_HOME/bin/start
+else
+  $APP_HOME/bin/start
 fi
 
 sleep 2
