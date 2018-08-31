@@ -37,6 +37,7 @@ _solr_client_key="solr.client"
 _solr_http_url_key="solr.http.url"
 _solr_cloud_url_key="solr.cloud.zookeeper"
 _solr_data_key="solr.data.dir"
+_solr_start_key="start.solr"
 # Ldap
 _ldap_hostname_key="org.codice.ddf.ldap.hostname"
 _ldap_port_key="org.codice.ddf.ldap.port"
