@@ -17,11 +17,13 @@ if [ -n "$SOLR_ZK_HOSTS" ]; then
   props del ${_solr_http_url_key} ${_system_properties_file}
   props set ${_solr_cloud_url_key} $SOLR_ZK_HOSTS ${_system_properties_file}
   props del ${_solr_data_key} ${_system_properties_file}
+  props set ${_solr_start_key} false ${_system_properties_file}
 fi
 
 if [ -n "$SOLR_URL" ]; then
   echo "Remote Solr Support is enabled, solr url: $SOLR_URL"
   props set ${_solr_http_url_key} ${SOLR_URL} ${_system_properties_file}
+  props set ${_solr_start_key} false ${_system_properties_file}
 fi
 
 # TODO: add more fine grained ldap configuration support
