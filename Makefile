@@ -40,7 +40,7 @@ help: ## Display help.
 	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z_-]+:.*?## / {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)
 
 .PHONY: images
-images: $(IMAGES) $(LATEST_IMAGES) latest ## Build all docker containers
+images: $(IMAGES) $(LATEST_IMAGES) latest edge ## Build all docker containers
 
 .PHONY: $(IMAGES)
 $(IMAGES): ## Build specific image
@@ -57,9 +57,13 @@ latest:
 	@echo "Building $@"
 	@docker build -t $(IMAGE_NAME):latest-$(IMAGE_ARCH) -f latest/linux/alpine/Dockerfile latest/linux
 
+.PHONY: edge
+edge:
+	@echo "Building $@"
+	@docker build -t $(IMAGE_NAME):edge-$(IMAGE_ARCH) -f edge/linux/alpine/Dockerfile edge/linux
 
 .PHONY: push
-push: images $(PUSH_TARGETS) $(LATEST_PUSH_TARGETS) push_latest ## Push all images
+push: images $(PUSH_TARGETS) $(LATEST_PUSH_TARGETS) push_latest push_edge ## Push all images
 
 .PHONY: $(PUSH_TARGETS)
 $(PUSH_TARGETS): ## Push specific image
@@ -76,8 +80,13 @@ push_latest:
 	@echo "Pushing latest"
 	@docker push $(IMAGE_NAME):latest-$(IMAGE_ARCH)
 
+.PHONY: push_edge
+push_edge:
+	@echo "Pushing edge"
+	@docker push $(IMAGE_NAME):edge-$(IMAGE_ARCH)
+
 .PHONY: manifests
-manifests: $(MANIFEST_TARGETS) $(LATEST_MANIFEST_TARGETS) manifest_latest ## Create all manifests
+manifests: $(MANIFEST_TARGETS) $(LATEST_MANIFEST_TARGETS) manifest_latest manifest_edge ## Create all manifests
 
 .PHONY: $(MANIFEST_TARGETS)
 $(MANIFEST_TARGETS): .tools/manifest-tool ## Push manifest objects
@@ -102,6 +111,14 @@ manifest_latest:
 		--platforms $(MANIFEST_PLATFORMS) \
 		--template $(IMAGE_NAME):latest-ARCH \
 		--target $(IMAGE_NAME):latest
+
+.PHONY: manifest_latest
+manifest_edge:
+	@echo "Creating/Pushing manifest object for edge"
+	@.tools/manifest-tool push from-args \
+		--platforms $(MANIFEST_PLATFORMS) \
+		--template $(IMAGE_NAME):edge-ARCH \
+		--target $(IMAGE_NAME):edge
 
 .tools/manifest-tool: ## Install manifest-tool
 	@echo "Downloading manifest-tool $(MANIFEST_TOOL_NAME)"
