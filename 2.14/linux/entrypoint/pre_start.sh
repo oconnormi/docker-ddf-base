@@ -7,8 +7,12 @@ ${ENTRYPOINT_HOME}/certs.sh
 
 props set ${_system_hostname_key} ${_app_hostname} ${_system_properties_file}
 props set ${_system_sitename_key} ${_app_hostname} ${_system_properties_file}
-props del localhost ${_users_properties_file}
-props set ${_app_hostname} ${_system_user_privileges} ${_users_properties_file}
+if props get localhost ${_users_properties_file} > /dev/null ; then
+  props del localhost ${_users_properties_file}
+fi
+if ! props get ${_app_hostname} ${_users_properties_file} > /dev/null ; then
+  props set ${_app_hostname} ${_system_user_privileges} ${_users_properties_file}
+fi
 sed -i "s/localhost/$_app_hostname/" ${_users_attributes_file}
 
 if [ -n "$SOLR_ZK_HOSTS" ]; then
