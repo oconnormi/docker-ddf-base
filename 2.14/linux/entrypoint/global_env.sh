@@ -32,6 +32,10 @@ _system_internal_http_port="org.codice.ddf.system.internalHttpPort"
 _system_internal_https_port="org.codice.ddf.system.internalHttpsPort"
 _default_http_port=8181
 _default_https_port=8993
+_system_external_protocol_key="org.codice.ddf.external.protocol"
+_system_external_hostname_key="org.codice.ddf.external.hostname"
+_system_external_https_port_key="org.codice.ddf.external.httpsPort"
+_system_external_http_port_key="org.codice.ddf.external.httpPort"
 # Solr
 _solr_client_key="solr.client"
 _solr_http_url_key="solr.http.url"
