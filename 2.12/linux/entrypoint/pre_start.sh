@@ -77,6 +77,9 @@ if [ "${SECURITY_MANAGER_DISABLED}" = true ]; then
   props del proGrade.getPermissions.override ${_system_properties_file}
 fi
 
+if [ -n "$EXTERNAL_URL" ]; then
+  props set ${_system_external_hostname_key} ${EXTERNAL_URL} ${_system_properties_file}
+fi
 
 
 # Copy any existing configuration files before starting the container
