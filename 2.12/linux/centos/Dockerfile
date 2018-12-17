@@ -9,9 +9,9 @@ MAINTAINER oconnormi
 
 # Environment Variables
 # JAVA Environment Variables
-ENV JDK_VERSION=8u181 \
-    JDK_BUILD_VERSION=b13 \
-    JDK_ID=96a7b8442fe848ef90c96a2fad6ed6d1 \
+ENV JDK_VERSION=8u191 \
+    JDK_BUILD_VERSION=b12 \
+    JDK_ID=2787e4a523244c269598db4e85c51e0c \
     JAVA_HOME=/usr/java/latest \
     ENTRYPOINT_HOME=/opt/entrypoint
 
