@@ -2,10 +2,10 @@
 
 source ${ENTRYPOINT_HOME}/certs_env.sh
 
-_subject="/C=US/ST=AZ/L=Hursley/O=DDF/OU=Dev/CN=${_app_hostname}"
+_subject="/C=US/ST=AZ/L=Hursley/O=DDF/OU=Dev/CN=${_system_external_hostname}"
 _serial=$(cat /dev/urandom | tr -dc '0-9' | fold -w 16 | head -n 1)
 
-echo "External Hostname: ${_app_hostname}"
+echo "External Hostname: ${_system_external_hostname}"
 echo "Alternative Names: ${_san}"
 echo "Updating ${APP_NAME} certificates"
 

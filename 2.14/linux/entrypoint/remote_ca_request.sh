@@ -15,7 +15,7 @@ function join_by { local d=$1; shift; echo -n "$1"; shift; printf "%s" "${@/#/$d
 _remote_request_key_alg=${CSR_KEY_ALGORITHM:="rsa"}
 _remote_request_key_size=${CSR_KEY_SIZE:="2048"}
 _remote_request_hosts=${_san}
-_remote_request_cn=${_app_hostname}
+_remote_request_cn=${_system_external_hostname}
 _remote_request_names_country=${CSR_COUNTRY:="US"}
 _remote_request_names_locality=${CSR_LOCALITY:="Hursley"}
 _remote_request_names_organization=${CSR_ORGANIZATION:="DDF"}
