@@ -22,6 +22,15 @@ ENV APP_LOG=<log_file>
 ...
 # Install application
 ```
+## Features
+  * Oracle JDK8
+  * [jq](https://stedolan.github.io/jq/) for processing json
+  * curl
+  * [props](https://github.com/oconnormi/props) tool for modifying properties files
+  * Common entry point for DDF based distributions
+  * Automated certificate generation
+  * Automated initial setup and configuration
+    * Can request certs from a remote cfssl based CA via `CA_REMOTE_URL=https://<host>:<port>`  
 
 ## Extending
 
@@ -58,25 +67,40 @@ For more complex extension, any number of executable files can be added to `$ENT
 For simple extension, add a script: `$ENTRYPOINT_HOME/post_start_custom.sh`
 For more complex extension, any number of executable files can be added to `$ENTRYPOINT_HOME/post/`
 
-## Features
-  * Oracle JDK8
-  * [jq](https://stedolan.github.io/jq/) for processing json
-  * curl
-  * [props](https://github.com/oconnormi/props) tool for modifying properties files
-  * Common entry point for DDF based distributions
-  * Automated certificate generation
-  * Automated initial setup and configuration
-    * Can request certs from a remote cfssl based CA via `CA_REMOTE_URL=https://<host>:<port>`  
-
 ### Basic Configuration
 
-To set the hostname used by DDF based systems, provide a value to `APP_HOSTNAME=<hostname>`
+#### System Hostname
+
+To set the external hostname used by DDF based systems, provide a value to `EXTERNAL_HOSTNAME=<hostname>`. This will be the hostname that all external requests to the system should use.
+
+To set the internal hostname used by DDF based systems, provide a value to `INTERNAL_HOSTNAME=<hostname>`
+
+#### Internal System Ports
+
+*Note:* Setting these options changes the ports that are actually bound by the server. In most cases this should not be necessary.
+
+To set the internal HTTPS Port provide a value for `INTERNAL_HTTPS_PORT=<port>`
+
+To set the internal HTTP Port provide a value for `INTERNAL_HTTP_PORT=<port>`
+
+#### External System Ports
+
+*Note:* Setting these options affect the url that the server expects external requests to use.
+
+To set the external HTTPS Port provide a value for `EXTERNAL_HTTPS_PORT=<port>`
+
+To set the external HTTP Port provide a value for `EXTERNAL_HTTP_PORT=<port>`
+
+#### External Solr
 
 To configure a solr backend, provide a value to `SOLR_URL=<external solr url>`. By default this will use the internal solr server
 
 To configure a solr cloud backend, provide a value to `SOLR_ZK_HOSTS=<zk host>,<zk host>,<zk host>,...`
+#### External LDAP
 
 To configure the ldap client, provide a value to `LDAP_HOST=<hostname>`. *NOTE:* Currently this is for testing purposes only, as it does not provide a means for configuring the protocol, port, username, or password used by the ldap client.
+
+#### Java Memory
 
 To set the amount of memory allocated to the system set `JAVA_MAX_MEM`
 
@@ -105,9 +129,9 @@ Custom keystores can easily be mounted to `APP_HOME/etc/keystores/serverKeystore
 
 #### Auto-generated demo certs
 
-If custom keystores are not used the startup process will generate certificates on the fly. By default the local ddf demo CA (bundled within the ddf distribution) will be used to generate a certificate for the value of `APP_HOSTNAME`, or if not provided the value of `hostname -f` will be used.
+If custom keystores are not used the startup process will generate certificates on the fly. By default the local ddf demo CA (bundled within the ddf distribution) will be used to generate a certificate for the value of `INTERNAL_HOSTNAME`, or if not provided the value of `hostname -f` will be used.
 
-Additionally Subject Alternative Names will be added to the certificate for `DNS:$APP_HOSTNAME(if unset will use `hostname -f`),DNS:localhost,IP:127.0.0.1`.
+Additionally Subject Alternative Names will be added to the certificate for `DNS:$INTERNAL_HOSTNAME(if unset will use `hostname -f`),$EXTERNAL_HOSTNAME,DNS:localhost,IP:127.0.0.1`.
 To add additional SAN values use the `CSR_SAN=<DNS|IP>:<value>,...` environment variable.
 
 #### Import Existing Certificates
@@ -211,3 +235,4 @@ Sometimes during the startup process the system can take a while to fully initia
 
 ## Deprecated features
 * `APP_NODENAME=<node_name>` *DEPRECATED* use `CSR_SAN=<DNS|IP>:<value>,...` instead
+* `APP_HOSTNAME=<hostname>` *DEPRECATED* use `INTERNAL_HOSTNAME=<hostname>` instead
