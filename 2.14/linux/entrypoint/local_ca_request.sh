@@ -37,9 +37,9 @@ openssl ca \
         -in ${_app_local_ca}/${_keyAlias}.csr \
         -out ${_app_local_ca}/newcerts/${_keyAlias}.cer > /dev/null 2>&1
 
-cat ${_app_local_ca}/cacert.pem \
+cat ${_app_local_ca}/private/${_keyAlias}.key \
     ${_app_local_ca}/newcerts/${_keyAlias}.cer \
-    ${_app_local_ca}/private/${_keyAlias}.key \
+    ${_app_local_ca}/cacert.pem \
     > ${_app_local_ca}/private/${_keyAlias}.pem
 
 openssl pkcs12 \

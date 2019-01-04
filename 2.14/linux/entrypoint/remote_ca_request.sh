@@ -66,9 +66,9 @@ cat ${_tmp_cert_dir}/ca-response.json | jq .result.certificate --raw-output > ${
 cat ${_tmp_cert_dir}/ca-response.json | jq .result.private_key --raw-output > ${_tmp_cert_dir}/$_keyAlias.key
 openssl s_client -connect ${_remote_ca#https://} -showcerts </dev/null 2>/dev/null|openssl x509 -outform PEM > ${_tmp_cert_dir}/ca.pem
 
-cat ${_tmp_cert_dir}/ca.pem \
+cat ${_tmp_cert_dir}/${_keyAlias}.key \
     ${_tmp_cert_dir}/${_keyAlias}.pem \
-    ${_tmp_cert_dir}/${_keyAlias}.key \
+    ${_tmp_cert_dir}/ca.pem \
     > ${_tmp_output_dir}/${_keyAlias}.pem
 
 openssl pkcs12 \
