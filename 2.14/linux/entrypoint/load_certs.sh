@@ -120,7 +120,7 @@ function main {
   echo "Preparing to import provided cert from 'SSL_CERT'"
   checkIfAlreadyDone
   if [ $? -eq 0 ]; then
-    echo "Certificate for ${_app_hostname} already present in ${_server_keystore_file}, skipping import of certs"
+    echo "Certificate for ${_system_internal_hostname} already present in ${_server_keystore_file}, skipping import of certs"
     return 0
   fi
 
