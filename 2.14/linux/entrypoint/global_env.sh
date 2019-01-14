@@ -1,8 +1,10 @@
 #!/bin/bash
 
-# Determine the hostname used for the system, if not overridden by APP_HOSTNAME, defaults to the value of `hostname -f`
+# Determine the internal hostname used for the system, if not overridden by APP_HOSTNAME, defaults to the value of `hostname -f`
 _app_hostname=${APP_HOSTNAME:=$(hostname -f)}
-_system_user_privileges="${_app_hostname},group,admin,manager,viewer,system-admin,system-history,systembundles"
+_system_internal_hostname=${INTERNAL_HOSTNAME:=${_app_hostname}}
+_system_external_hostname=${EXTERNAL_HOSTNAME:=${_system_internal_hostname}}
+_system_user_privileges="${_system_internal_hostname},group,admin,manager,viewer,system-admin,system-history,systembundles"
 
 _ldap_port=${LDAP_PORT:=1636}
 
@@ -28,14 +30,18 @@ _system_hostname_key="org.codice.ddf.system.hostname"
 _system_sitename_key="org.codice.ddf.system.siteName"
 _system_https_port_key="org.codice.ddf.system.httpsPort"
 _system_http_port_key="org.codice.ddf.system.httpPort"
-_system_internal_http_port="org.codice.ddf.system.internalHttpPort"
-_system_internal_https_port="org.codice.ddf.system.internalHttpsPort"
 _default_http_port=8181
 _default_https_port=8993
 _system_external_protocol_key="org.codice.ddf.external.protocol"
 _system_external_hostname_key="org.codice.ddf.external.hostname"
 _system_external_https_port_key="org.codice.ddf.external.httpsPort"
 _system_external_http_port_key="org.codice.ddf.external.httpPort"
+
+_system_internal_https_port=${INTERNAL_HTTPS_PORT:=${_default_https_port}}
+_system_internal_http_port=${INTERNAL_HTTP_PORT:=${_default_http_port}}
+_system_external_https_port=${EXTERNAL_HTTPS_PORT:=${_default_https_port}}
+_system_external_http_port=${EXTERNAL_HTTP_PORT:=${_default_http_port}}
+
 # Solr
 _solr_client_key="solr.client"
 _solr_http_url_key="solr.http.url"
@@ -62,7 +68,7 @@ _client="${_app_bin}/client -r ${_karaf_client_retries} -d ${_karaf_client_delay
 ###### Readiness Check Settings #######
 _experimental_checks_enabled=${EXPERIMENTAL_READINESS_CHECKS_ENABLED:=false}
 # The following bundles are excluded from the legacy 'lna' based ready check
-_legacy_wfr_exclusions=${READINESS_EXCLUSIONS:="Apache Karaf :: Features :: Extension, Hosts|DDF :: Platform :: OSGi :: Conditions, Hosts|Apache Karaf :: Shell :: Console, Hosts|DDF :: Platform :: PaxWeb :: Jetty Config, Hosts"}
+_legacy_wfr_exclusions=${READINESS_EXCLUSIONS:="Apache Karaf :: Features :: Extension, Hosts|DDF :: Platform :: OSGi :: Conditions, Hosts|Apache Karaf :: Shell :: Console, Hosts|DDF :: Platform :: PaxWeb :: Jetty Config, Hosts|JLine JANSI Terminal, Hosts"}
 
 ###### Functions ############
 

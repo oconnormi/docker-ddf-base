@@ -5,15 +5,21 @@ source ${ENTRYPOINT_HOME}/global_env.sh
 # Prepare Certs
 ${ENTRYPOINT_HOME}/certs.sh
 
-props set ${_system_hostname_key} ${_app_hostname} ${_system_properties_file}
-props set ${_system_sitename_key} ${_app_hostname} ${_system_properties_file}
+props set ${_system_sitename_key} ${_system_external_hostname} ${_system_properties_file}
+props set ${_system_external_hostname_key} ${_system_external_hostname} ${_system_properties_file}
+props set ${_system_external_https_port_key} ${_system_external_https_port} ${_system_properties_file}
+props set ${_system_external_http_port_key} ${_system_external_http_port} ${_system_properties_file}
+props set ${_system_https_port_key} ${_system_internal_https_port} ${_system_properties_file}
+props set ${_system_http_port_key} ${_system_internal_http_port} ${_system_properties_file}
+props set ${_system_hostname_key} ${_system_internal_hostname} ${_system_properties_file}
+
 if props get localhost ${_users_properties_file} > /dev/null ; then
   props del localhost ${_users_properties_file}
 fi
-if ! props get ${_app_hostname} ${_users_properties_file} > /dev/null ; then
-  props set ${_app_hostname} ${_system_user_privileges} ${_users_properties_file}
+if ! props get ${_system_internal_hostname} ${_users_properties_file} > /dev/null ; then
+  props set ${_system_internal_hostname} ${_system_user_privileges} ${_users_properties_file}
 fi
-sed -i "s/localhost/$_app_hostname/" ${_users_attributes_file}
+sed -i "s/localhost/$_system_internal_hostname/" ${_users_attributes_file}
 
 if [ -n "$SOLR_ZK_HOSTS" ]; then
   echo "Solr Cloud Support is enabled, zkhosts: $SOLR_ZK_HOSTS"
@@ -47,24 +53,6 @@ if [ -n "$IDP_URL" ]; then
   props set ${_idp_useragent_key} ${_idp_useragent_value} ${_idp_client_config_file}
 fi
 
-if [ -n "$HTTPS_PORT" ]; then
-   props set ${_system_https_port_key} ${HTTPS_PORT} ${_system_properties_file}
-fi
-
-if [ -n "$HTTP_PORT" ]; then
-  props set ${_system_http_port_key} ${HTTP_PORT} ${_system_properties_file}
-fi
-
-if [ -n "$BASE_URL_HTTP_PORT" ]; then
-  props set ${_system_https_port_key} ${BASE_URL_HTTP_PORT} ${_system_properties_file}
-  props set ${_system_internal_http_port} ${_default_http_port} ${_system_properties_file}
-fi
-
-if [ -n "$BASE_URL_HTTPS_PORT" ]; then
-  props set ${_system_https_port_key} ${BASE_URL_HTTPS_PORT} ${_system_properties_file}
-  props set ${_system_internal_https_port} ${_default_https_port} ${_system_properties_file}
-fi
-
 if [ -n "$JAVA_MAX_MEM" ]; then
    sed -i "s/Xmx.*g /Xmx${JAVA_MAX_MEM}g /g" ${_setenv_file}
 fi
@@ -75,10 +63,6 @@ if [ "${SECURITY_MANAGER_DISABLED}" = true ]; then
   props del java.security.manager ${_system_properties_file}
   props del java.security.policy ${_system_properties_file}
   props del proGrade.getPermissions.override ${_system_properties_file}
-fi
-
-if [ -n "$EXTERNAL_URL" ]; then
-  props set ${_system_external_hostname_key} ${EXTERNAL_URL} ${_system_properties_file}
 fi
 
 # Copy any existing configuration files before starting the container
@@ -106,4 +90,30 @@ if [ -e "${ENTRYPOINT_HOME}/pre_start_custom.sh" ]; then
   chmod 755 ${ENTRYPOINT_HOME}/pre_start_custom.sh
   sleep 1
   ${ENTRYPOINT_HOME}/pre_start_custom.sh
+fi
+
+# Deprecated ENV Vars
+if [ -n "$HTTPS_PORT" ]; then
+   echo "!WARNING! HTTPS_PORT env var is deprectated. Use 'INTERNAL_HTTPS_PORT'. Deprecated Env Vars will be removed in future versions" 
+   props set ${_system_https_port_key} ${HTTPS_PORT} ${_system_properties_file}
+fi
+
+if [ -n "$HTTP_PORT" ]; then
+  echo "!WARNING! 'HTTP_PORT' env var is deprecated. Use 'INTERNAL_HTTP_PORT'. Deprecated Env Vars will be removed in future versions"
+  props set ${_system_http_port_key} ${HTTP_PORT} ${_system_properties_file}
+fi
+
+if [ -n "$BASE_URL_HTTP_PORT" ]; then
+  echo "!WARNING! 'BASE_URL_HTTP_PORT' env var is deprecated. Use 'EXTERNAL_HTTP_PORT'. Deprecated Env Vars will be removed in future versions"
+  props set ${_system_external_http_port} ${BASE_URL_HTTP_PORT} ${_system_properties_file}
+fi
+
+if [ -n "$BASE_URL_HTTPS_PORT" ]; then
+  echo "!WARNING! 'BASE_URL_HTTPS_PORT' env var is deprecated. Use 'EXTERNAL_HTTPS_PORT'. Deprecated Env Vars will be removed in future versions"
+  props set ${_system_external_https_port} ${BASE_URL_HTTPS_PORT} ${_system_properties_file}
+fi
+
+if [ -n "$EXTERNAL_URL" ]; then
+  echo "!WARNING! 'EXTERNAL_URL' env var is deprecated. Use 'EXTERNAL_HOSTNAME'. Deprecated Env Vars will be removed in future versions"
+  props set ${_system_external_hostname_key} ${EXTERNAL_URL} ${_system_properties_file}
 fi

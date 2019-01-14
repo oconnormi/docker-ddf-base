@@ -15,7 +15,7 @@ function join_by { local d=$1; shift; echo -n "$1"; shift; printf "%s" "${@/#/$d
 _remote_request_key_alg=${CSR_KEY_ALGORITHM:="rsa"}
 _remote_request_key_size=${CSR_KEY_SIZE:="2048"}
 _remote_request_hosts=${_san}
-_remote_request_cn=${_app_hostname}
+_remote_request_cn=${_system_external_hostname}
 _remote_request_names_country=${CSR_COUNTRY:="US"}
 _remote_request_names_locality=${CSR_LOCALITY:="Hursley"}
 _remote_request_names_organization=${CSR_ORGANIZATION:="DDF"}
@@ -66,9 +66,9 @@ cat ${_tmp_cert_dir}/ca-response.json | jq .result.certificate --raw-output > ${
 cat ${_tmp_cert_dir}/ca-response.json | jq .result.private_key --raw-output > ${_tmp_cert_dir}/$_keyAlias.key
 openssl s_client -connect ${_remote_ca#https://} -showcerts </dev/null 2>/dev/null|openssl x509 -outform PEM > ${_tmp_cert_dir}/ca.pem
 
-cat ${_tmp_cert_dir}/ca.pem \
+cat ${_tmp_cert_dir}/${_keyAlias}.key \
     ${_tmp_cert_dir}/${_keyAlias}.pem \
-    ${_tmp_cert_dir}/${_keyAlias}.key \
+    ${_tmp_cert_dir}/ca.pem \
     > ${_tmp_output_dir}/${_keyAlias}.pem
 
 openssl pkcs12 \

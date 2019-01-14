@@ -6,8 +6,8 @@ _remote_ca=${CA_REMOTE_URL:=""} # Set to host:port for remote CFSSL based CA
 _storepass=changeit
 _trustStoreOpts="-keystore ${_server_truststore_file} -storepass ${_storepass} -noprompt"
 _keytoolOpts="-keystore ${_server_keystore_file} -storepass ${_storepass} -noprompt"
-_san=DNS:${_app_hostname},DNS:localhost,IP:127.0.0.1
-_keyAlias=${_app_hostname}
+_san=DNS:${_system_internal_hostname},DNS:${_system_external_hostname},DNS:localhost,IP:127.0.0.1
+_keyAlias=${_system_external_hostname}
 
 DUMMY_DELETE_OPTS="-delete -alias localhost ${_keytoolOpts}"
 
