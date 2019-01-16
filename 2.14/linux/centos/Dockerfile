@@ -17,7 +17,7 @@ ENV JDK_VERSION=8u191 \
 
 # Update OS with necessary packages
 RUN yum update -y \
-    && yum install -y unzip openssl
+    && yum install -y unzip openssl gettext
 
 # Download Oracle Java
 RUN curl -OL "http://download.oracle.com/otn-pub/java/jdk/$JDK_VERSION-$JDK_BUILD_VERSION/$JDK_ID/jdk-$JDK_VERSION-linux-x64.rpm" -H 'Cookie: oraclelicense=accept-securebackup-cookie' \
