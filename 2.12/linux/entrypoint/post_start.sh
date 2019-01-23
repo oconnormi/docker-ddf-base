@@ -18,22 +18,22 @@ if [ -n "$INSTALL_PROFILE" ]; then
 fi
 
 if [ -n "$INSTALL_FEATURES" ]; then
-  IFS=';' read -r -a INSTALL_FEATURES <<< "${INSTALL_FEATURES}"
-  echo "Preparing to install ${#INSTALL_FEATURES[@]} features"
-  for index in "${!INSTALL_FEATURES[@]}"
+  IFS=';' read -r -a _install_features <<< "${INSTALL_FEATURES}"
+  echo "Preparing to install ${#_install_features[@]} features"
+  for index in "${!_install_features[@]}"
   do
-    echo "Installing: ${INSTALL_FEATURES[$index]}"
-    ${_client} "feature:install ${INSTALL_FEATURES[$index]}"
+    echo "Installing: ${_install_features[$index]}"
+    ${_client} "feature:install ${_install_features[$index]}"
   done
 fi
 
 if [ -n "$UNINSTALL_FEATURES" ]; then
-  IFS=';' read -r -a UNINSTALL_FEATURES <<< "${UNINSTALL_FEATURES}"
-  echo "Preparing to uninstall ${#UNINSTALL_FEATURES[@]} features"
-  for index in "${!UNINSTALL_FEATURES[@]}"
+  IFS=';' read -r -a _uninstall_features <<< "${UNINSTALL_FEATURES}"
+  echo "Preparing to uninstall ${#_uninstall_features[@]} features"
+  for index in "${!_uninstall_features[@]}"
   do
-    echo "Uninstalling: ${UNINSTALL_FEATURES[$index]}"
-    ${_client} "feature:uninstall ${UNINSTALL_FEATURES[$index]}"
+    echo "Uninstalling: ${_uninstall_features[$index]}"
+    ${_client} "feature:uninstall ${_uninstall_features[$index]}"
   done
 fi
 
