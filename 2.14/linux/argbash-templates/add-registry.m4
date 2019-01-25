@@ -47,17 +47,19 @@ function getExistingPid {
     if [ $? -ne 0 ] || [ -z ${servicePid} ]; then
         return 2
     fi
+    servicePid=${servicePid%\"}
+    servicePid=${servicePid#\"}
     echo "${servicePid}"
 }
 
-# Checks if a configuration exists for a given id
-function configExists {
-  shopt -s extglob
-  local result=$(find ${_arg_config_directory} -type f -name "${_service_name}*" -exec grep -H "${_arg_name}" {} \; | wc -l)
-  result=${result##*( )}
-  result=${result%%*( )}
-  shopt -u extglob
-  echo "${result}"
+# returns an existing config file for a registry with a given name
+# returns 1 if no config exists or if more than one exists
+function getExistingConfig {
+  local results=$(grep -sl "name=\"${_arg_name}\"" ${_arg_config_directory}/${_service_name}-*.config)
+  if [ "${#results[@]}" -ne 1 ]; then
+    return 1
+  fi
+  echo "${results}"
 }
 
 # Creates a service pid used by the managed service factory
@@ -128,9 +130,8 @@ function initialize {
         return ${gotName}
     fi
 
-    local existingFile=$(configExists)
-    if [ -z "${existingFile}" ]; then
-        printf "\nInside File Exists\n"
+    local existingFile="$(getExistingConfig)"
+    if [ ! -z "${existingFile}" ]; then
         _config_file=${existingFile}
         _service_pid=$(getExistingPid ${_config_file})
     else
@@ -160,6 +161,8 @@ function createConfig {
     if [ "${_arg_auto_push}" = "on" ]; then
         _auto_push="true"
     fi
+
+    echo "pid: ${_pid}"
 
     export _push _pull _auto_push
 
