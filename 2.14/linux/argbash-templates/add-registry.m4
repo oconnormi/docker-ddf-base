@@ -1,6 +1,6 @@
 #!/bin/bash
 
-_registry_template_directory=${REGISTRY_TEMPLATE_DIRECTORY:=${ENTRYPOINT_HOME}/templates/registry}
+_registry_templates_directory=${REGISTRY_TEMPLATE_DIRECTORY:=${ENTRYPOINT_HOME}/templates/registry}
 _app_config_directory=${APP_HOME}/etc
 
 # m4_ignore(
@@ -161,8 +161,6 @@ function createConfig {
     if [ "${_arg_auto_push}" = "on" ]; then
         _auto_push="true"
     fi
-
-    echo "pid: ${_pid}"
 
     export _push _pull _auto_push
 
