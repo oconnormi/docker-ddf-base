@@ -23,6 +23,10 @@ _server_truststore_file=${_app_keystores}/serverTruststore.jks
 _idp_client_config_file=${_app_etc}/org.codice.ddf.security.idp.client.IdpMetadata.config
 #####################################
 
+###### Source Configuration Properties ######
+_source_template_directory=${SOURCE_TEMPLATE_DIRECTORY:="${ENTRYPOINT_HOME}/templates/sources"}
+#############################################
+
 ###### Property Key Constants ######
 # Basic System
 _system_protocol_key="org.codice.ddf.system.protocol"
