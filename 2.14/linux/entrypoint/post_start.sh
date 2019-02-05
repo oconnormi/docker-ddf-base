@@ -58,7 +58,13 @@ fi
 if [ -d "$ENTRYPOINT_HOME/post" ]; then
   for f in "$ENTRYPOINT_HOME/post/*";
     do
-      sudo chmod 755 $f
+      
+      if [ $(whoami) = "gsr"]; then
+        sudo chmod 755 $f
+      else
+        chmod 755 $f
+      fi
+
       echo "Running additional post_start configuration: $f"
       $f
     done;
@@ -68,7 +74,13 @@ echo "To run additional post_start configurations mount a script to ${ENTRYPOINT
 
 if [ -e "${ENTRYPOINT_HOME}/post_start_custom.sh" ]; then
   echo "Post-Start Custom Configuration Script found, running now..."
-  sudo chmod 755 ${ENTRYPOINT_HOME}/post_start_custom.sh
+  
+  if [ $(whoami) = "gsr"]; then
+    sudo chmod 755 ${ENTRYPOINT_HOME}/post_start_custom.sh
+  else
+    chmod 755 ${ENTRYPOINT_HOME}/post_start_custom.sh
+  fi
+  
   sleep 1
   ${ENTRYPOINT_HOME}/post_start_custom.sh
 fi

@@ -2,7 +2,13 @@
 
 if [ -e "${ENTRYPOINT_HOME}/pre_start.sh" ]; then
   echo "Pre-Start Configuration Script found, running now..."
-  sudo chmod 755 ${ENTRYPOINT_HOME}/pre_start.sh
+
+  if [ $(whoami) = "gsr" ]; then
+    sudo chmod 755 ${ENTRYPOINT_HOME}/pre_start.sh
+  else
+    chmod 755 ${ENTRYPOINT_HOME}/pre_start.sh
+  fi
+
   sleep 1
   ${ENTRYPOINT_HOME}/pre_start.sh
 fi
@@ -19,7 +25,13 @@ sleep 2
 
 if [ -e "${ENTRYPOINT_HOME}/post_start.sh" ]; then
   echo "Post-Start Configuration Script found, running now..."
-  sudo chmod 755 ${ENTRYPOINT_HOME}/post_start.sh
+  
+  if [ $(whoami) = "gsr"]; then
+    sudo chmod 755 ${ENTRYPOINT_HOME}/post_start.sh
+  else
+    chmod 755 ${ENTRYPOINT_HOME}/post_start.sh
+  fi
+
   sleep 1
   ${ENTRYPOINT_HOME}/post_start.sh
 fi
