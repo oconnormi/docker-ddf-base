@@ -229,6 +229,30 @@ Full example:
 
 To configure the IdP client metadata location set the `IDP_URL` environment variable. For example: `IDP_URL=https://some.host/services/idp/login/metadata`
 
+### Configuring Registries
+
+Multiple registries containing federated source listings can be used to automatically set up federation.
+To configure registries set the `REGISTRY` environment variable.
+The registry variable takes input in the form `REGISTRY=url|option|option|...,url|option|...
+
+The only required argument for each registry is the url. Other positional options are as follows:
+
+| Parameter    | Description                                                         | Default                          |
+|:------------:|:-------------------------------------------------------------------:|:--------------------------------:|
+| `name`       | Sets the name of the remote registry                                | Defaults to the URL when omitted |
+| `type`       | Sets the registry type                                              | `csw`                            |
+| `push`       | Configures registry client to push to registry                      | `true`                           |
+| `pull`       | Configures registry client to pull from registry                    | `true`                           |
+| `auto-push`  | Configures registry client to push its identity to the registry     | `true`                           |
+| `username`   | Configures registry client username                                 | `null`                           |
+| `password`   | Configures registry client password                                 | `null`                           |
+
+#### Extending
+
+By default the base image only supports `CSW` type registries.
+To support other registry types add a template to `$ENTRYPOINT_HOME/templates/registry/`.
+Templates should be named: `<name>.template`
+
 ### Troubleshooting
 
 Sometimes during the startup process the system can take a while to fully initialize. This can be due to memory/cpu constraints. On underpowered systems it might be necessary to instruct the entrypoint script to wait longer and attempt more retries to connect to the system during the boot process. This can be accomplished by setting the `KARAF_CLIENT_DELAY=<time> (default: 10)` (in seconds) or `KARAF_CLIENT_RETRIES=<number> (default: 12)`
