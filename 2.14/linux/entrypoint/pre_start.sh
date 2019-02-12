@@ -85,9 +85,9 @@ sed -i 's/#sshPort=8101/sshPort=8101/' ${_karaf_shell_config_file}
 
 echo "To run additional pre_start configurations mount a script to ${ENTRYPOINT_HOME}/pre_start_custom.sh"
 
-if [ -n "$SOURCES"]; then
+if [ -n "$SOURCES" ]; then
   ${ENTRYPOINT_HOME}/sources.sh
-if
+fi
 
 if [ -e "${ENTRYPOINT_HOME}/pre_start_custom.sh" ]; then
   echo "Pre-Start Custom Configuration Script found, running now..."
@@ -95,8 +95,6 @@ if [ -e "${ENTRYPOINT_HOME}/pre_start_custom.sh" ]; then
   sleep 1
   ${ENTRYPOINT_HOME}/pre_start_custom.sh
 fi
-
-
 
 # Deprecated ENV Vars
 if [ -n "$HTTPS_PORT" ]; then
