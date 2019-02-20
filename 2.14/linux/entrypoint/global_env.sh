@@ -72,7 +72,7 @@ _client="${_app_bin}/client -r ${_karaf_client_retries} -d ${_karaf_client_delay
 ###### Readiness Check Settings #######
 _experimental_checks_enabled=${EXPERIMENTAL_READINESS_CHECKS_ENABLED:=false}
 # The following bundles are excluded from the legacy 'lna' based ready check
-_legacy_wfr_exclusions=${READINESS_EXCLUSIONS:="Apache Karaf :: Features :: Extension, Hosts|DDF :: Platform :: OSGi :: Conditions, Hosts|Apache Karaf :: Shell :: Console, Hosts|DDF :: Platform :: PaxWeb :: Jetty Config, Hosts|JLine JANSI Terminal, Hosts"}
+_legacy_wfr_exclusions=${READINESS_EXCLUSIONS:="Apache Karaf :: Features :: Extension, Hosts|DDF :: Platform :: OSGi :: Conditions, Hosts|Apache Karaf :: Shell :: Console, Hosts|DDF :: Platform :: PaxWeb :: Jetty Config, Hosts|JLine JANSI Terminal, Hosts|Apache Aries Blueprint Core Compatiblity Fragment Bundle, Hosts"}
 
 ###### Functions ############
 
@@ -93,7 +93,7 @@ function isReady {
     fi
     return 0
   else
-    if [ $(${_client} "lna" | tail -n +4 | grep -Ev "${_legacy_wfr_exclusions}" | wc -l | awk '{$1=$1};1') != "0" ]; then
+    if [ $(${_client} "lna" | tail -n +6 | grep -Ev "${_legacy_wfr_exclusions}" | wc -l | awk '{$1=$1};1') != "0" ]; then
       return 1
     fi
     return 0
