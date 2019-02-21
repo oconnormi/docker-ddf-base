@@ -4,14 +4,17 @@ set -e
 
 _default_config_dir="${APP_HOME}/etc"
 _default_profiles_json="${APP_HOME}/etc/ws-security/profiles.json"
+_default_in_place_editing=false
+_default_hostname=$HOSTNAME
 
 # m4_ignore(
 echo "This is just a script template, not the script (yet) - pass it to 'argbash' to fix this." >&2
 exit 11  #)Created by argbash-init v2.7.1
-# ARG_OPTIONAL_SINGLE([config-directory], [c], [location where the config files are], [${_default_config_dir}])
-# ARG_OPTIONAL_SINGLE([profiles-json], [p], [JSON file with profile attributes], [${_default_profiles_json}])
-# ARG_POSITIONAL_SINGLE([hostname])
-# ARG_POSITIONAL_SINGLE([profile])
+# ARG_OPTIONAL_SINGLE([config-directory],[c],[location where the config files are],[${_default_config_dir}])
+# ARG_OPTIONAL_SINGLE([profiles-json],[j],[JSON file with profile attributes],[${_default_profiles_json}])
+# ARG_OPTIONAL_SINGLE([hostname],[h],[hostname],[${_default_hostname}])
+# ARG_OPTIONAL_BOOLEAN([in-place],[i],[replace original config files with edits],[off])
+# ARG_POSITIONAL_SINGLE([profile],[p],[security profile to use])
 # ARG_DEFAULTS_POS
 # ARG_HELP([<The general help message of my script>])
 # ARGBASH_GO
@@ -25,6 +28,7 @@ USER_ATTRIBUTES_FILE=""
 ATTRIBUTES_WORKING_FILE=""
 CONFIG_WORKING_FILE=""
 CONFIG_DIR=""
+IN_PLACE_EDITING=""
 
 # Handles printing error messages to the terminal and exiting the program.
 # ${1} - String of the error message to print
@@ -41,6 +45,12 @@ function set_up() {
     CONFIG_DIR=$_arg_config_directory
     PROFILE_FILE=$_arg_profiles_json
     USER_ATTRIBUTES_FILE="${_arg_config_directory}/user.attributes"
+    # in-place editing value will be either "on" or "off"
+    IN_PLACE_EDITING=${_arg_in_place}
+
+    if [[ $HOSTNAME = "" ]]; then
+        error "Hostname variable is not set."
+    fi
 
     if [[ ! -d $CONFIG_DIR ]]; then
         error "Unable to find the config directory: '${CONFIG_DIR}'"
@@ -77,6 +87,13 @@ function set_up() {
 # Clean up function to be run at the end that handles removing any temporary files created during
 # the script's operation.
 function clean_up() {
+    if [[ $IN_PLACE_EDITING = "on" ]]; then
+        cp $ATTRIBUTES_WORKING_FILE $USER_ATTRIBUTES_FILE
+    else
+        printf "\nModified ${USER_ATTRIBUTES_FILE}:\n"
+        jq '.' $ATTRIBUTES_WORKING_FILE
+    fi
+
     rm $ATTRIBUTES_WORKING_FILE
     rm $CONFIG_WORKING_FILE
 
@@ -147,7 +164,7 @@ function set_config_properties() {
     # iterates through the config objects and sets the properties in the specified locations
     # we have to base64 encode the config objects to prevent jq from wrapping the whitespaces with
     # single quotes and causing the parser to break
-    for config in $(echo ${1} | base64 --decode | jq -r '.[] | @base64'); do
+    for config in ${1}; do
         pid=$(echo $config | base64 --decode | jq -r '.value.pid')
         properties=$(echo $config | base64 --decode | jq -r '.value.properties | to_entries')
         config_file="${CONFIG_DIR}/${pid}.config"
@@ -159,8 +176,15 @@ function set_config_properties() {
                 property_key=$(echo $property | base64 --decode | jq -r '.key')
                 property_value=$(echo $property | base64 --decode | jq -rc '.value')
                 # use oconnormi's props command line tool for editing config files
-                props set $property_key $property_value $CONFIG_WORKING_FILE
+                props set $property_key "$property_value" $CONFIG_WORKING_FILE
             done
+
+            if [[ $IN_PLACE_EDITING = "on" ]]; then
+                cp $CONFIG_WORKING_FILE $config_file
+            else
+                printf "\nModified ${config_file}:\n"
+                cat $CONFIG_WORKING_FILE
+            fi
         fi
     done
 
@@ -173,7 +197,7 @@ function set_profile_properties() {
     decoded_profile_attributes=$(echo ${1} | base64 --decode)
     guest_claims=$(echo $decoded_profile_attributes | jq -r '.guestClaims | to_entries | @base64')
     system_claims=$(echo $decoded_profile_attributes | jq -r '.systemClaims | to_entries | @base64')
-    configs=$(echo $decoded_profile_attributes | jq -r '.configs | to_entries | @base64')
+    configs=$(echo $decoded_profile_attributes | jq -r '.configs | to_entries | .[] | @base64')
 
     # writes the final modified objects to the working file
     echo $(echo $(set_attributes $guest_claims "guest" false) | base64 --decode | jq '.') \
