@@ -4,7 +4,7 @@
 _app_hostname=${APP_HOSTNAME:=$(hostname -f)}
 _system_internal_hostname=${INTERNAL_HOSTNAME:=${_app_hostname}}
 _system_external_hostname=${EXTERNAL_HOSTNAME:=${_system_internal_hostname}}
-_system_user_privileges="${_system_internal_hostname},group,admin,manager,viewer,system-admin,system-history,systembundles"
+_system_user_privileges="${_system_internal_hostname},group,admin,manager,viewer,system-user,system-admin,system-history,data-manager,systembundles,ssh"
 
 _ldap_port=${LDAP_PORT:=1636}
 
