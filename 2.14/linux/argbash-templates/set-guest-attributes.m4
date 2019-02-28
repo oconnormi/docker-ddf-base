@@ -61,6 +61,7 @@ function set_up() {
     fi
 
     CONFIG_WORKING_FILE="./config_tmp_working.config"
+    touch $CONFIG_WORKING_FILE
     # jq doesn't do in-place editing so we have to create a temporary working file to make our
     # modifications in
     ATTRIBUTES_WORKING_FILE="./jq_tmp_working.json"
