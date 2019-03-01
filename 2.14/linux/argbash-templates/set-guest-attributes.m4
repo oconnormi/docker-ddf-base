@@ -1,7 +1,5 @@
 #!/bin/bash
 
-set -e
-
 _default_config_dir="${APP_HOME}/etc"
 _default_profiles_json="${APP_HOME}/etc/ws-security/profiles.json"
 _default_in_place_editing=false
@@ -21,6 +19,9 @@ exit 11  #)Created by argbash-init v2.7.1
 
 # [ <-- needed because of Argbash
 
+trap "exit 1" TERM
+export TOP_PID=$$
+
 HOSTNAME=""
 PROFILE=""
 PROFILE_FILE=""
@@ -33,8 +34,16 @@ IN_PLACE_EDITING=""
 # Handles printing error messages to the terminal and exiting the program.
 # ${1} - String of the error message to print
 function error() {
+    if [[ -f $ATTRIBUTES_WORKING_FILE ]]; then
+        rm $ATTRIBUTES_WORKING_FILE
+    fi
+
+    if [[ -f $CONFIG_WORKING_FILE ]]; then
+        rm $CONFIG_WORKING_FILE
+    fi
+
     echo "${1}" 1>&2
-    exit 1
+    kill -s TERM $TOP_PID
 }
 
 # Set up function to be run at the beginning that handles setting the global variables defining
@@ -81,8 +90,6 @@ function set_up() {
     if [[ $is_valid_profile = false ]]; then
         error "Invalid security profile name: '${PROFILE}'"
     fi
-
-    return 0
 }
 
 # Clean up function to be run at the end that handles removing any temporary files created during
@@ -95,18 +102,19 @@ function clean_up() {
         jq '.' $ATTRIBUTES_WORKING_FILE
     fi
 
-    rm $ATTRIBUTES_WORKING_FILE
-    rm $CONFIG_WORKING_FILE
+    if [[ -f $ATTRIBUTES_WORKING_FILE ]]; then
+        rm $ATTRIBUTES_WORKING_FILE
+    fi
 
-    return 0
+    if [[ -f $CONFIG_WORKING_FILE ]]; then
+        rm $CONFIG_WORKING_FILE
+    fi
 }
 
 # Parses the profiles JSON file and finds the available profile names.
 function find_available_profile_names() {
     profiles=$(jq -r 'keys | .[]' $PROFILE_FILE)
     echo $profiles
-
-    return 0
 }
 
 # Helper function to iterate through each attribute of the current property group of the selected
@@ -155,8 +163,6 @@ function set_attributes() {
 
     # return the base64 encoded working object variable with all the new attributes
     echo $(echo $working_obj | jq -r '@base64')
-
-    return 0
 }
 
 # Sets the properties for the designated config files.
@@ -188,8 +194,6 @@ function set_config_properties() {
             fi
         fi
     done
-
-    return 0
 }
 
 # Parses the JSON object for the selected security profile and gets the groups of properties
@@ -208,8 +212,6 @@ function set_profile_properties() {
 
     # sets the config properties defined separately from the claims attributes
     echo $(set_config_properties $configs)
-
-    return 0
 }
 
 # Main function to run when the script is started.
@@ -218,8 +220,6 @@ function main() {
     profile_attributes=$(jq -r --arg key $PROFILE '.[ $key ] | @base64' $PROFILE_FILE)
     set_profile_properties $profile_attributes
     clean_up
-
-    return 0
 }
 
 main
