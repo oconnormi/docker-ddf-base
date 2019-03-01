@@ -35,21 +35,12 @@ IN_PLACE_EDITING=""
 # ${1} - String of the error message to print
 function error() {
     clean_up true
-    echo "${1}" 1>&2
+    echo "error: ${1}" 1>&2
     kill -s TERM $TOP_PID
 }
 
-# Set up function to be run at the beginning that handles setting the global variables defining
-# file locations and command-line arguments.
-function set_up() {
-    HOSTNAME=$_arg_hostname
-    PROFILE=$_arg_profile
-    CONFIG_DIR=$_arg_config_directory
-    PROFILE_FILE=$_arg_profiles_json
-    USER_ATTRIBUTES_FILE="${_arg_config_directory}/user.attributes"
-    # in-place editing value will be either "on" or "off"
-    IN_PLACE_EDITING=${_arg_in_place}
-
+# Handles checking the global variables used to hold the program arguments and throws the appropriate error.
+function check_program_args() {
     if [[ $HOSTNAME = "" ]]; then
         error "Hostname variable is not set."
     fi
@@ -62,13 +53,11 @@ function set_up() {
         error "Unable to find the user attributes file."
     fi
 
-    CONFIG_WORKING_FILE="./config_tmp_working.config"
-    touch $CONFIG_WORKING_FILE
-    # jq doesn't do in-place editing so we have to create a temporary working file to make our
-    # modifications in
-    ATTRIBUTES_WORKING_FILE="./jq_tmp_working.json"
-    # use the current user attributes file as a starting point for the working file
-    cp $USER_ATTRIBUTES_FILE $ATTRIBUTES_WORKING_FILE
+    # does a basic parse on the profiles JSON file to check that it is in valid JSON format
+    profile_json=$(jq '.' $PROFILE_FILE)
+    if [[ $? != 0 ]]; then
+        error "Unable to parse the profiles JSON file."
+    fi
 
     available_profiles=$(find_available_profile_names)
     is_valid_profile=false
@@ -83,6 +72,29 @@ function set_up() {
     if [[ $is_valid_profile = false ]]; then
         error "Invalid security profile name: '${PROFILE}'"
     fi
+}
+
+# Set up function to be run at the beginning that handles setting the global variables defining
+# file locations and command-line arguments.
+function set_up() {
+    HOSTNAME=$_arg_hostname
+    PROFILE=$_arg_profile
+    CONFIG_DIR=$_arg_config_directory
+    PROFILE_FILE=$_arg_profiles_json
+    USER_ATTRIBUTES_FILE="${_arg_config_directory}/user.attributes"
+    # in-place editing value will be either "on" or "off"
+    IN_PLACE_EDITING=${_arg_in_place}
+
+    # calls function to check that the program arguments are valid
+    check_program_args
+
+    CONFIG_WORKING_FILE="./config_tmp_working.config"
+    touch $CONFIG_WORKING_FILE
+    # jq doesn't do in-place editing so we have to create a temporary working file to make our
+    # modifications in
+    ATTRIBUTES_WORKING_FILE="./jq_tmp_working.json"
+    # use the current user attributes file as a starting point for the working file
+    cp $USER_ATTRIBUTES_FILE $ATTRIBUTES_WORKING_FILE
 }
 
 # Clean up function to be run at the end that handles removing any temporary files created during
