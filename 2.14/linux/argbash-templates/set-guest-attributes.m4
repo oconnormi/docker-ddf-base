@@ -34,14 +34,7 @@ IN_PLACE_EDITING=""
 # Handles printing error messages to the terminal and exiting the program.
 # ${1} - String of the error message to print
 function error() {
-    if [[ -f $ATTRIBUTES_WORKING_FILE ]]; then
-        rm $ATTRIBUTES_WORKING_FILE
-    fi
-
-    if [[ -f $CONFIG_WORKING_FILE ]]; then
-        rm $CONFIG_WORKING_FILE
-    fi
-
+    clean_up true
     echo "${1}" 1>&2
     kill -s TERM $TOP_PID
 }
@@ -94,12 +87,16 @@ function set_up() {
 
 # Clean up function to be run at the end that handles removing any temporary files created during
 # the script's operation.
+# ${1} - Boolean of if this function was called from an error function.
 function clean_up() {
-    if [[ $IN_PLACE_EDITING = "on" ]]; then
-        cp $ATTRIBUTES_WORKING_FILE $USER_ATTRIBUTES_FILE
-    else
-        printf "\nModified ${USER_ATTRIBUTES_FILE}:\n"
-        jq '.' $ATTRIBUTES_WORKING_FILE
+    # only do modification tasks if clean_up function called from the main function
+    if [[ ${1} = false ]]; then
+        if [[ $IN_PLACE_EDITING = "on" ]]; then
+            cp $ATTRIBUTES_WORKING_FILE $USER_ATTRIBUTES_FILE
+        else
+            printf "\nModified ${USER_ATTRIBUTES_FILE}:\n"
+            jq '.' $ATTRIBUTES_WORKING_FILE
+        fi
     fi
 
     if [[ -f $ATTRIBUTES_WORKING_FILE ]]; then
@@ -219,7 +216,7 @@ function main() {
     set_up
     profile_attributes=$(jq -r --arg key $PROFILE '.[ $key ] | @base64' $PROFILE_FILE)
     set_profile_properties $profile_attributes
-    clean_up
+    clean_up false
 }
 
 main
