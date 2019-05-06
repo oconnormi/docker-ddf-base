@@ -65,6 +65,10 @@ if [ "${SECURITY_MANAGER_DISABLED}" = true ]; then
   props del proGrade.getPermissions.override ${_system_properties_file}
 fi
 
+if [ -n "${SECURITY_PROFILE}" ]; then
+  ${ENTRYPOINT_HOME}/security_profile.sh
+fi
+
 # Copy any existing configuration files before starting the container
 if [ -d "$ENTRYPOINT_HOME/pre_config" ]; then
   echo "Copying configuration files from ${ENTRYPOINT_HOME}/pre_config to ${APP_HOME}"
