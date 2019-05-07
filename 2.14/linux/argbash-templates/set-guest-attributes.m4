@@ -149,7 +149,7 @@ function set_attributes() {
 
     # decodes the given array and compacts the output so we can loop through it and get each key
     # and associated value
-    for attribute in $(echo ${1} | base64 --decode | jq -c '.[]'); do
+    for attribute in $(echo ${1} | base64 -d | jq -c '.[]'); do
         property_key=$(echo $attribute | jq -r '.key')
         property_value=$(echo $attribute | jq -r '.value')
         # array values need to be handled differently than strings
@@ -181,16 +181,16 @@ function set_config_properties() {
     # we have to base64 encode the config objects to prevent jq from wrapping the whitespaces with
     # single quotes and causing the parser to break
     for config in ${1}; do
-        pid=$(echo $config | base64 --decode | jq -r '.value.pid')
-        properties=$(echo $config | base64 --decode | jq -r '.value.properties | to_entries')
+        pid=$(echo $config | base64 -d | jq -r '.value.pid')
+        properties=$(echo $config | base64 -d | jq -r '.value.properties | to_entries')
         config_file="${CONFIG_DIR}/${pid}.config"
 
         if [[ -f $config_file ]]; then
             cp $config_file $CONFIG_WORKING_FILE
 
             for property in $(echo $properties | jq -r '.[] | @base64'); do
-                property_key=$(echo $property | base64 --decode | jq -r '.key')
-                property_value=$(echo $property | base64 --decode | jq -rc '.value')
+                property_key=$(echo $property | base64 -d | jq -r '.key')
+                property_value=$(echo $property | base64 -d | jq -rc '.value')
                 # use oconnormi's props command line tool for editing config files
                 props set $property_key "$property_value" $CONFIG_WORKING_FILE
             done
@@ -208,15 +208,15 @@ function set_config_properties() {
 # Parses the JSON object for the selected security profile and gets the groups of properties
 # ${1} - Base64-encoded JSON object with the properties of the selected profile
 function set_profile_properties() {
-    decoded_profile_attributes=$(echo ${1} | base64 --decode)
+    decoded_profile_attributes=$(echo ${1} | base64 -d)
     guest_claims=$(echo $decoded_profile_attributes | jq -r '.guestClaims | to_entries | @base64')
     system_claims=$(echo $decoded_profile_attributes | jq -r '.systemClaims | to_entries | @base64')
     configs=$(echo $decoded_profile_attributes | jq -r '.configs | to_entries | .[] | @base64')
 
     # writes the final modified objects to the working file
-    echo $(echo $(set_attributes $guest_claims "guest" false) | base64 --decode | jq '.') \
+    echo $(echo $(set_attributes $guest_claims "guest" false) | base64 -d | jq '.') \
             > $ATTRIBUTES_WORKING_FILE
-    echo $(echo $(set_attributes $system_claims $HOSTNAME true) | base64 --decode | jq '.') \
+    echo $(echo $(set_attributes $system_claims $HOSTNAME true) | base64 -d | jq '.') \
             > $ATTRIBUTES_WORKING_FILE
 
     # sets the config properties defined separately from the claims attributes

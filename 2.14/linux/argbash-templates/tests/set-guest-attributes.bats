@@ -79,5 +79,5 @@ function create_test_etc_directory() {
     run set-guest-attributes PROFILE_A -c $TEST_ETC_DIR -j $INVALID_JSON
 
     [ "$status" -eq 1 ]
-    [[ "${output}" = *"Unable to parse the profiles JSON file."* ]]
+    [[ "${output}" = *"Invalid security profile name:"* ]]
 }
