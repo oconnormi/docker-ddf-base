@@ -89,6 +89,10 @@ if [ -n "$SOURCES" ]; then
   ${ENTRYPOINT_HOME}/sources.sh
 fi
 
+if [ "${CATALOG_FANOUT_MODE}" = true ]; then
+  ${ENTRYPOINT_HOME}/fanout_mode.sh
+fi
+
 if [ -e "${ENTRYPOINT_HOME}/pre_start_custom.sh" ]; then
   echo "Pre-Start Custom Configuration Script found, running now..."
   chmod 755 ${ENTRYPOINT_HOME}/pre_start_custom.sh

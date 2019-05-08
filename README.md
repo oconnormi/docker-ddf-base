@@ -247,6 +247,24 @@ The only required argument for each registry is the url. Other positional option
 | `username`   | Configures registry client username                                 | `null`                           |
 | `password`   | Configures registry client password                                 | `null`                           |
 
+
+### Creating Catalog Sources
+
+To add federated sources to the catalog use the `SOURCES` environment variable.
+
+This variable can contain a comma separated list of sources with their respective parameters. All parameters are separated by a `|` character.
+
+The order of parameters is: `<source_type>|<source_name>|<url>[|<username>|<password>]` (`[]` denote optional parameters)
+
+#### Source Types
+
+By default the only source type that is supported is `csw_federated`. Additional template files can be added similar to (csw_federated.config)[https://github.com/oconnormi/docker-ddf-base/blob/master/2.14/linux/entrypoint/files/templates/sources/csw_federated.config] and placed in `${ENTRYPOINT_HOME}/templates/sources`
+
+### Catalog Fanout Mode
+
+To switch the behavior of the catalog to use fanout mode provide `CATALOG_FANOUT_MODE=true` as an environment variable
+
+
 #### Extending
 
 By default the base image only supports `CSW` type registries.
