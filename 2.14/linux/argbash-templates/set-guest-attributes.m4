@@ -6,8 +6,8 @@ _default_in_place_editing=false
 _default_hostname=$HOSTNAME
 
 # m4_ignore(
-#echo "This is just a script template, not the script (yet) - pass it to 'argbash' to fix this." >&2
-#exit 11  #)Created by argbash-init v2.7.1
+echo "This is just a script template, not the script (yet) - pass it to 'argbash' to fix this." >&2
+exit 11  #)Created by argbash-init v2.7.1
 # ARG_OPTIONAL_SINGLE([config-directory],[c],[location where the config files are],[${_default_config_dir}])
 # ARG_OPTIONAL_SINGLE([profiles-json],[j],[JSON file with profile attributes],[${_default_profiles_json}])
 # ARG_OPTIONAL_SINGLE([hostname],[h],[hostname],[${_default_hostname}])
@@ -226,13 +226,11 @@ function set_profile_properties() {
     #   "$key=$value", \
     #   "$key=$value", \
     #   ]
-    guest_claims_keys=($(echo $decoded_profile_attributes | jq -r ".guestClaims | keys[]"))
-    guest_claims_values=($(echo $decoded_profile_attributes | jq -r ".guestClaims | values[]"))
-
+    guest_claims_attributes=($(echo $decoded_profile_attributes | jq -r ".guestClaims | to_entries | map(\"\(.key)=\(.value|tostring)\") |.[]"))  
     echo "attributes=[ \\" > $GUEST_CLAIMS_CONFIG_FILE
-    for index in "${!guest_claims_keys[@]}"
+    for index in "${!guest_claims_attributes[@]}"
     do 
-      printf "\t\"${guest_claims_keys[$index]}=${guest_claims_values[$index]}\", \\ \n" >> $GUEST_CLAIMS_CONFIG_FILE
+      printf "\t\"${guest_claims_attributes[$index]}\", \\ \n" >> $GUEST_CLAIMS_CONFIG_FILE
     done
     printf "\t]\n" >> $GUEST_CLAIMS_CONFIG_FILE
 
