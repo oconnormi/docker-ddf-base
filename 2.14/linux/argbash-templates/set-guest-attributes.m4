@@ -6,8 +6,8 @@ _default_in_place_editing=false
 _default_hostname=$HOSTNAME
 
 # m4_ignore(
-echo "This is just a script template, not the script (yet) - pass it to 'argbash' to fix this." >&2
-exit 11  #)Created by argbash-init v2.7.1
+#echo "This is just a script template, not the script (yet) - pass it to 'argbash' to fix this." >&2
+#exit 11  #)Created by argbash-init v2.7.1
 # ARG_OPTIONAL_SINGLE([config-directory],[c],[location where the config files are],[${_default_config_dir}])
 # ARG_OPTIONAL_SINGLE([profiles-json],[j],[JSON file with profile attributes],[${_default_profiles_json}])
 # ARG_OPTIONAL_SINGLE([hostname],[h],[hostname],[${_default_hostname}])
@@ -22,10 +22,11 @@ exit 11  #)Created by argbash-init v2.7.1
 trap "exit 1" TERM
 export TOP_PID=$$
 
-HOSTNAME=""
+SYSTEM_HOSTNAME=""
 PROFILE=""
 PROFILE_FILE=""
 USER_ATTRIBUTES_FILE=""
+GUEST_CLAIMS_CONFIG_FILE=""
 ATTRIBUTES_WORKING_FILE=""
 CONFIG_WORKING_FILE=""
 CONFIG_DIR=""
@@ -41,7 +42,7 @@ function error() {
 
 # Handles checking the global variables used to hold the program arguments and throws the appropriate error.
 function check_program_args() {
-    if [[ $HOSTNAME = "" ]]; then
+    if [[ $SYSTEM_HOSTNAME = "" ]]; then
         error "Hostname variable is not set."
     fi
 
@@ -77,11 +78,12 @@ function check_program_args() {
 # Set up function to be run at the beginning that handles setting the global variables defining
 # file locations and command-line arguments.
 function set_up() {
-    HOSTNAME=$_arg_hostname
+    SYSTEM_HOSTNAME=$_arg_hostname
     PROFILE=$_arg_profile
     CONFIG_DIR=$_arg_config_directory
     PROFILE_FILE=$_arg_profiles_json
     USER_ATTRIBUTES_FILE="${_arg_config_directory}/users.attributes"
+    GUEST_CLAIMS_CONFIG_FILE="${_arg_config_directory}/ddf.security.sts.guestclaims.config"
     # in-place editing value will be either "on" or "off"
     IN_PLACE_EDITING=${_arg_in_place}
 
@@ -213,10 +215,29 @@ function set_profile_properties() {
     system_claims=$(echo $decoded_profile_attributes | jq -r '.systemClaims | to_entries | @base64')
     configs=$(echo $decoded_profile_attributes | jq -r '.configs | to_entries | .[] | @base64')
 
+    
+    # writes the guest claims attributes to the guest claims config file. 
+    # This file is a .config file which uses the java properties format of key=value
+    # furthermore the attributes are stored as an array so we need to do some conversion
+    #
+    # Need to get keys and values
+    # create a new file with contents like
+    # attributes=[ \
+    #   "$key=$value", \
+    #   "$key=$value", \
+    #   ]
+    guest_claims_keys=($(echo $decoded_profile_attributes | jq -r ".guestClaims | keys[]"))
+    guest_claims_values=($(echo $decoded_profile_attributes | jq -r ".guestClaims | values[]"))
+
+    echo "attributes=[ \\" > $GUEST_CLAIMS_CONFIG_FILE
+    for index in "${!guest_claims_keys[@]}"
+    do 
+      printf "\t\"${guest_claims_keys[$index]}=${guest_claims_values[$index]}\", \\ \n" >> $GUEST_CLAIMS_CONFIG_FILE
+    done
+    printf "\t]\n" >> $GUEST_CLAIMS_CONFIG_FILE
+
     # writes the final modified objects to the working file
-    echo $(echo $(set_attributes $guest_claims "guest" false) | base64 -d | jq '.') \
-            > $ATTRIBUTES_WORKING_FILE
-    echo $(echo $(set_attributes $system_claims $HOSTNAME true) | base64 -d | jq '.') \
+    echo $(echo $(set_attributes $system_claims $SYSTEM_HOSTNAME true) | base64 -d | jq '.') \
             > $ATTRIBUTES_WORKING_FILE
 
     # sets the config properties defined separately from the claims attributes
