@@ -14,7 +14,7 @@ exit 11  #)Created by argbash-init v2.7.1
 # ARG_OPTIONAL_BOOLEAN([in-place],[i],[replace original config files with edits],[off])
 # ARG_POSITIONAL_SINGLE([profile],[p],[security profile to use])
 # ARG_DEFAULTS_POS
-# ARG_HELP([<The general help message of my script>])
+# ARG_HELP([<Sets the system security profile>])
 # ARGBASH_GO
 
 # [ <-- needed because of Argbash
@@ -81,7 +81,7 @@ function set_up() {
     PROFILE=$_arg_profile
     CONFIG_DIR=$_arg_config_directory
     PROFILE_FILE=$_arg_profiles_json
-    USER_ATTRIBUTES_FILE="${_arg_config_directory}/user.attributes"
+    USER_ATTRIBUTES_FILE="${_arg_config_directory}/users.attributes"
     # in-place editing value will be either "on" or "off"
     IN_PLACE_EDITING=${_arg_in_place}
 
