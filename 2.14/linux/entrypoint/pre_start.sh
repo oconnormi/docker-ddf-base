@@ -5,7 +5,7 @@ source ${ENTRYPOINT_HOME}/global_env.sh
 # Prepare Certs
 ${ENTRYPOINT_HOME}/certs.sh
 
-props set ${_system_sitename_key} ${_system_external_hostname} ${_system_properties_file}
+props set ${_system_sitename_key} ${_system_sitename} ${_system_properties_file}
 props set ${_system_external_hostname_key} ${_system_external_hostname} ${_system_properties_file}
 props set ${_system_external_https_port_key} ${_system_external_https_port} ${_system_properties_file}
 props set ${_system_external_http_port_key} ${_system_external_http_port} ${_system_properties_file}

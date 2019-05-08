@@ -91,6 +91,10 @@ To set the external HTTPS Port provide a value for `EXTERNAL_HTTPS_PORT=<port>`
 
 To set the external HTTP Port provide a value for `EXTERNAL_HTTP_PORT=<port>`
 
+#### Site Name
+
+To set the site name for the system provide a value to `SITE_NAME=<name>`. This defaults to the external hostname of the system when omitted.
+
 #### External Solr
 
 To configure a solr backend, provide a value to `SOLR_URL=<external solr url>`. By default this will use the internal solr server
