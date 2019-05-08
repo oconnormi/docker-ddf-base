@@ -90,7 +90,7 @@ if [ -n "$SOURCES" ]; then
 fi
 
 if [ "${CATALOG_FANOUT_MODE}" = true ]; then
-  ${ENTRPOINT_HOME}/fanout_mode.sh
+  ${ENTRYPOINT_HOME}/fanout_mode.sh
 fi
 
 if [ -e "${ENTRYPOINT_HOME}/pre_start_custom.sh" ]; then
