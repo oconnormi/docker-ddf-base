@@ -207,6 +207,8 @@ function set_config_properties() {
     done
 }
 
+function join_by { local d=$1; shift; echo -n "$1"; shift; printf "%s" "${@/#/$d}"; }
+
 # Parses the JSON object for the selected security profile and gets the groups of properties
 # ${1} - Base64-encoded JSON object with the properties of the selected profile
 function set_profile_properties() {
@@ -223,16 +225,13 @@ function set_profile_properties() {
     # Need to get keys and values
     # create a new file with contents like
     # attributes=[ \
-    #   "$key=$value", \
-    #   "$key=$value", \
+    #   "$key\=$value", \
+    #   "$key\=$value", \
     #   ]
-    guest_claims_attributes=($(echo $decoded_profile_attributes | jq -r ".guestClaims | to_entries | map(\"\(.key)=\(.value|tostring)\") |.[]"))  
-    echo "attributes=[ \\" > $GUEST_CLAIMS_CONFIG_FILE
-    for index in "${!guest_claims_attributes[@]}"
-    do 
-      printf "\t\"${guest_claims_attributes[$index]}\", \\ \n" >> $GUEST_CLAIMS_CONFIG_FILE
-    done
-    printf "\t]\n" >> $GUEST_CLAIMS_CONFIG_FILE
+
+     guest_claims_attributes=($(echo $decoded_profile_attributes | jq -r '.guestClaims | to_entries | map("\(.key|tostring)=\(.value|tostring)") |.[]'))
+    guest_claims_flat=$(join_by '", "' "${guest_claims_attributes[@]}")
+    echo "attributes=[\"${guest_claims_flat}\"]" > $GUEST_CLAIMS_CONFIG_FILE
 
     # writes the final modified objects to the working file
     echo $(echo $(set_attributes $system_claims $SYSTEM_HOSTNAME true) | base64 -d | jq '.') \
