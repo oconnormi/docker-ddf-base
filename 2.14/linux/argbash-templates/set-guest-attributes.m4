@@ -14,7 +14,7 @@ exit 11  #)Created by argbash-init v2.7.1
 # ARG_OPTIONAL_BOOLEAN([in-place],[i],[replace original config files with edits],[off])
 # ARG_POSITIONAL_SINGLE([profile],[p],[security profile to use])
 # ARG_DEFAULTS_POS
-# ARG_HELP([<The general help message of my script>])
+# ARG_HELP([<Sets the system security profile>])
 # ARGBASH_GO
 
 # [ <-- needed because of Argbash
@@ -22,10 +22,11 @@ exit 11  #)Created by argbash-init v2.7.1
 trap "exit 1" TERM
 export TOP_PID=$$
 
-HOSTNAME=""
+SYSTEM_HOSTNAME=""
 PROFILE=""
 PROFILE_FILE=""
 USER_ATTRIBUTES_FILE=""
+GUEST_CLAIMS_CONFIG_FILE=""
 ATTRIBUTES_WORKING_FILE=""
 CONFIG_WORKING_FILE=""
 CONFIG_DIR=""
@@ -41,7 +42,7 @@ function error() {
 
 # Handles checking the global variables used to hold the program arguments and throws the appropriate error.
 function check_program_args() {
-    if [[ $HOSTNAME = "" ]]; then
+    if [[ $SYSTEM_HOSTNAME = "" ]]; then
         error "Hostname variable is not set."
     fi
 
@@ -77,11 +78,12 @@ function check_program_args() {
 # Set up function to be run at the beginning that handles setting the global variables defining
 # file locations and command-line arguments.
 function set_up() {
-    HOSTNAME=$_arg_hostname
+    SYSTEM_HOSTNAME=$_arg_hostname
     PROFILE=$_arg_profile
     CONFIG_DIR=$_arg_config_directory
     PROFILE_FILE=$_arg_profiles_json
-    USER_ATTRIBUTES_FILE="${_arg_config_directory}/user.attributes"
+    USER_ATTRIBUTES_FILE="${_arg_config_directory}/users.attributes"
+    GUEST_CLAIMS_CONFIG_FILE="${_arg_config_directory}/ddf.security.sts.guestclaims.config"
     # in-place editing value will be either "on" or "off"
     IN_PLACE_EDITING=${_arg_in_place}
 
@@ -149,7 +151,7 @@ function set_attributes() {
 
     # decodes the given array and compacts the output so we can loop through it and get each key
     # and associated value
-    for attribute in $(echo ${1} | base64 --decode | jq -c '.[]'); do
+    for attribute in $(echo ${1} | base64 -d | jq -c '.[]'); do
         property_key=$(echo $attribute | jq -r '.key')
         property_value=$(echo $attribute | jq -r '.value')
         # array values need to be handled differently than strings
@@ -181,16 +183,16 @@ function set_config_properties() {
     # we have to base64 encode the config objects to prevent jq from wrapping the whitespaces with
     # single quotes and causing the parser to break
     for config in ${1}; do
-        pid=$(echo $config | base64 --decode | jq -r '.value.pid')
-        properties=$(echo $config | base64 --decode | jq -r '.value.properties | to_entries')
+        pid=$(echo $config | base64 -d | jq -r '.value.pid')
+        properties=$(echo $config | base64 -d | jq -r '.value.properties | to_entries')
         config_file="${CONFIG_DIR}/${pid}.config"
 
         if [[ -f $config_file ]]; then
             cp $config_file $CONFIG_WORKING_FILE
 
             for property in $(echo $properties | jq -r '.[] | @base64'); do
-                property_key=$(echo $property | base64 --decode | jq -r '.key')
-                property_value=$(echo $property | base64 --decode | jq -rc '.value')
+                property_key=$(echo $property | base64 -d | jq -r '.key')
+                property_value=$(echo $property | base64 -d | jq -rc '.value')
                 # use oconnormi's props command line tool for editing config files
                 props set $property_key "$property_value" $CONFIG_WORKING_FILE
             done
@@ -205,18 +207,34 @@ function set_config_properties() {
     done
 }
 
+function join_by { local d=$1; shift; echo -n "$1"; shift; printf "%s" "${@/#/$d}"; }
+
 # Parses the JSON object for the selected security profile and gets the groups of properties
 # ${1} - Base64-encoded JSON object with the properties of the selected profile
 function set_profile_properties() {
-    decoded_profile_attributes=$(echo ${1} | base64 --decode)
+    decoded_profile_attributes=$(echo ${1} | base64 -d)
     guest_claims=$(echo $decoded_profile_attributes | jq -r '.guestClaims | to_entries | @base64')
     system_claims=$(echo $decoded_profile_attributes | jq -r '.systemClaims | to_entries | @base64')
     configs=$(echo $decoded_profile_attributes | jq -r '.configs | to_entries | .[] | @base64')
 
+    
+    # writes the guest claims attributes to the guest claims config file. 
+    # This file is a .config file which uses the java properties format of key=value
+    # furthermore the attributes are stored as an array so we need to do some conversion
+    #
+    # Need to get keys and values
+    # create a new file with contents like
+    # attributes=[ \
+    #   "$key\=$value", \
+    #   "$key\=$value", \
+    #   ]
+
+     guest_claims_attributes=($(echo $decoded_profile_attributes | jq -r '.guestClaims | to_entries | map("\(.key|tostring)=\(.value|tostring)") |.[]'))
+    guest_claims_flat=$(join_by '", "' "${guest_claims_attributes[@]}")
+    echo "attributes=[\"${guest_claims_flat}\"]" > $GUEST_CLAIMS_CONFIG_FILE
+
     # writes the final modified objects to the working file
-    echo $(echo $(set_attributes $guest_claims "guest" false) | base64 --decode | jq '.') \
-            > $ATTRIBUTES_WORKING_FILE
-    echo $(echo $(set_attributes $system_claims $HOSTNAME true) | base64 --decode | jq '.') \
+    echo $(echo $(set_attributes $system_claims $SYSTEM_HOSTNAME true) | base64 -d | jq '.') \
             > $ATTRIBUTES_WORKING_FILE
 
     # sets the config properties defined separately from the claims attributes
