@@ -10,7 +10,7 @@ echo "This is just a script template, not the script (yet) - pass it to 'argbash
 exit 11  #)Created by argbash-init v2.7.1
 # ARG_OPTIONAL_SINGLE([config-directory],[c],[location where the config files are],[${_default_config_dir}])
 # ARG_OPTIONAL_SINGLE([profiles-json],[j],[JSON file with profile attributes],[${_default_profiles_json}])
-# ARG_OPTIONAL_SINGLE([hostname],[h],[hostname],[${_default_hostname}])
+# ARG_OPTIONAL_SINGLE([hostname],[H],[hostname],[${_default_hostname}])
 # ARG_OPTIONAL_BOOLEAN([in-place],[i],[replace original config files with edits],[off])
 # ARG_POSITIONAL_SINGLE([profile],[p],[security profile to use])
 # ARG_DEFAULTS_POS

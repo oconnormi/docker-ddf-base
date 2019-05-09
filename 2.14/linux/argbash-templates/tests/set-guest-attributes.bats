@@ -55,7 +55,7 @@ function create_test_etc_directory() {
 }
 
 @test "invalid hostname argument" { 
-    run set-guest-attributes PROFILE_A -j $TEST_JSON -c $TEST_ETC_DIR -h foo 
+    run set-guest-attributes PROFILE_A -j $TEST_JSON -c $TEST_ETC_DIR -H foo 
 
     [ "$status" -eq 1 ]
     [[ "${output}" = *"Key 'foo' does not exist in the user attributes file."* ]]
