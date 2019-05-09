@@ -7,6 +7,7 @@ RUN ./build.sh
 # Create base for final image
 FROM anapsix/alpine-java:8_jdk as base
 LABEL maintainer=oconnormi
+LABEL org.codice.application.type=ddf
 
 ENV ENTRYPOINT_HOME=/opt/entrypoint
 
