@@ -16,7 +16,7 @@ pipeline {
   stages {
     stage('Build Images') {
       steps {
-        sh 'make images'
+        sh 'make image'
       }
     }
     stage('Deploy Images') {
@@ -32,7 +32,6 @@ pipeline {
       steps {
         sh 'docker login -u $DOCKER_LOGIN_USR -p $DOCKER_LOGIN_PSW'
         sh 'make push'
-        sh 'make manifests'
       }
     }
   }
