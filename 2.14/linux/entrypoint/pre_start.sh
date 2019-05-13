@@ -78,7 +78,11 @@ fi
 if [ -d "$ENTRYPOINT_HOME/pre" ]; then
   for f in "$ENTRYPOINT_HOME/pre/*";
     do
-      chmod 755 $f
+      if [ $UID = 0 ]; then
+        chmod 755 $f
+      else 
+        sudo chmod 755 $f
+      fi
       echo "Running additional pre_start configuration: $f"
       $f
     done;
@@ -99,7 +103,11 @@ fi
 
 if [ -e "${ENTRYPOINT_HOME}/pre_start_custom.sh" ]; then
   echo "Pre-Start Custom Configuration Script found, running now..."
-  chmod 755 ${ENTRYPOINT_HOME}/pre_start_custom.sh
+  if [ $UID = 0 ]; then
+    chmod 755 ${ENTRYPOINT_HOME}/pre_start_custom.sh
+  else
+    sudo chmod 755 ${ENTRYPOINT_HOME}/pre_start_custom.sh
+  fi
   sleep 1
   ${ENTRYPOINT_HOME}/pre_start_custom.sh
 fi
