@@ -2,6 +2,10 @@
 
 Base level docker image containing all dependencies for DDF as well as a common set of steps for running a DDF based distribution
 
+## Notice on Versions
+
+This repo has been re-organized to have a single version of the entrypoint scripts going forward. the previous state of the repository can be found on the `legacy` branch.
+
 ## Usage Requirements
 
 This image is meant to be the basis for any ddf based image.
