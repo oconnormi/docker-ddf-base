@@ -12,6 +12,8 @@ props set ${_system_external_http_port_key} ${_system_external_http_port} ${_sys
 props set ${_system_https_port_key} ${_system_internal_https_port} ${_system_properties_file}
 props set ${_system_http_port_key} ${_system_internal_http_port} ${_system_properties_file}
 props set ${_system_hostname_key} ${_system_internal_hostname} ${_system_properties_file}
+props set ${_system_internal_context_key} ${_system_internal_context} ${_system_properties_file}
+props set ${_system_external_context_key} ${_system_external_context} ${_system_properties_file}
 
 if props get localhost ${_users_properties_file} > /dev/null ; then
   props del localhost ${_users_properties_file}

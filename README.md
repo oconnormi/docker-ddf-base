@@ -95,6 +95,18 @@ To set the external HTTPS Port provide a value for `EXTERNAL_HTTPS_PORT=<port>`
 
 To set the external HTTP Port provide a value for `EXTERNAL_HTTP_PORT=<port>`
 
+#### Internal Service Context
+
+Change the root context for all services
+
+Set `INTERNAL_CONTEXT=<context_path>`
+
+#### External Service Context
+
+Change the context for services when running behind a proxy/load balancer
+
+Set `EXTERNAL_CONTEXT=<context_path>`
+
 #### Site Name
 
 To set the site name for the system provide a value to `SITE_NAME=<name>`. This defaults to the external hostname of the system when omitted.

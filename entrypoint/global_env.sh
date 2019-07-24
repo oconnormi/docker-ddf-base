@@ -45,6 +45,14 @@ _system_internal_https_port=${INTERNAL_HTTPS_PORT:=${_default_https_port}}
 _system_internal_http_port=${INTERNAL_HTTP_PORT:=${_default_http_port}}
 _system_external_https_port=${EXTERNAL_HTTPS_PORT:=${_default_https_port}}
 _system_external_http_port=${EXTERNAL_HTTP_PORT:=${_default_http_port}}
+
+_default_system_context="/services"
+_default_external_context=""
+_system_external_context_key="org.codice.ddf.external.context"
+_system_internal_context_key="org.codice.ddf.system.rootContext"
+_system_internal_context=${INTERNAL_CONTEXT:=${_default_system_context}}
+_system_external_context=${EXTERNAL_CONTEXT:=${_default_external_context}}
+
 _system_sitename=${SITE_NAME:=${_system_external_hostname}}
 
 # Solr
