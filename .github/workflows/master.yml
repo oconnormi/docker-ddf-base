@@ -13,9 +13,9 @@ jobs:
       - name: build
         run: make image
       - uses: actions/docker/login@master
-        secrets: 
-          - "DOCKER_USERNAME"
-          - "DOCKER_PASSWORD"
+        env: 
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
       - name: push
         run: make push
 
