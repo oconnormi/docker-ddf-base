@@ -26,4 +26,6 @@ Temporary Items
 .apdisk
 
 .tools
+build
+.cache
 .idea/
