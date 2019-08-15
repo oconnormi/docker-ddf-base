@@ -4,6 +4,6 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-    - name: build
-      run: make image
+      - name: build
+        run: make image
 
