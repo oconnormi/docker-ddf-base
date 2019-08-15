@@ -1,0 +1,9 @@
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: build
+      run: make image
+

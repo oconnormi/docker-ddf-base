@@ -1,0 +1,14 @@
+name: Build Master
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: ./.github/workflows/build
+      - uses: ./.github/workflows/push
+
