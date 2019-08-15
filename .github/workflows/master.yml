@@ -11,11 +11,11 @@ jobs:
     steps:
       - uses: actions/checkout@master
       - name: build
-        run: make image
+        run: make image IMAGE_VERSION=latest
       - uses: actions/docker/login@master
         env: 
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
       - name: push
-        run: make push
+        run: make push IMAGE_VERSION=latest
 
