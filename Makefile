@@ -1,9 +1,10 @@
 # Set the base name for the image
 IMAGE_NAME:=codice/ddf-base
 
-GIT_BRANCH:=$(shell git symbolic-ref HEAD | sed -e 's,.*/\(.*\),\1,' 2>/dev/null)
-ifneq (${GIT_BRANCH}, master)
-	IMAGE_VERSION=${GIT_BRANCH}
+GIT_SHA:=$(shell git rev-parse HEAD)
+MASTER_SHA:=$(shell git show-ref -s refs/heads/master)
+ifneq (${MASTER_SHA}, ${GIT_SHA})
+	IMAGE_VERSION=${GIT_SHA}
 else
 	IMAGE_VERSION=latest
 endif
