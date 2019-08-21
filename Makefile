@@ -185,6 +185,11 @@ $(ARCHIVE_PREP_DIR)/bin/envsubst: $(BINARY_CACHE)/envsubst $(ARCHIVE_PREP_DIR)/b
 	@chmod 755 $@
 	touch $@
 
-$(ARCHIVE_OUTPUT): $(ARCHIVE_PREP_DIR) $(BUILD_PACKAGES_DIR) $(ARCHIVE_PREP_DIR)/bin/props $(ARCHIVE_PREP_DIR)/bin/jq $(ARCHIVE_PREP_DIR)/bin/envsubst $(argbash_targets) $(library_targets) $(environment_targets) $(files_targets)
+$(ARCHIVE_PREP_DIR)/entrypoint.sh: $(ARCHIVE_PREP_DIR)
+	@cp entrypoint.sh $@
+	@touch $@
+	@chmod 755 $@
+
+$(ARCHIVE_OUTPUT): $(ARCHIVE_PREP_DIR) $(BUILD_PACKAGES_DIR) $(ARCHIVE_PREP_DIR)/bin/props $(ARCHIVE_PREP_DIR)/bin/jq $(ARCHIVE_PREP_DIR)/bin/envsubst $(ARCHIVE_PREP_DIR)/entrypoint.sh $(argbash_targets) $(library_targets) $(environment_targets) $(files_targets)
 	@echo "Packaging Entrypoint Distribution $@ from $<"
 	@tar czf $@ -C $< .
