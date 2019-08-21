@@ -1,6 +1,8 @@
 #!/usr/bin/env bats
 
 function setup() {
+    export ENTRYPOINT_HOME=/opt/entrypoint
+    export PATH=${ENTRYPOINT_HOME}/bin:${PATH}
     export TEST_JSON="test_guest_attributes.json"
     export TEST_ETC_DIR="test_etc"
     export INVALID_JSON="invalid.json"
