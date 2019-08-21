@@ -19,6 +19,13 @@ ARCHIVE_NAME := $(PACKAGE_NAME).tar.gz
 ARCHIVE_OUTPUT := $(BUILD_PACKAGES_DIR)/$(ARCHIVE_NAME)
 INSTALL_OUTPUT := $(BUILD_PREP_DIR)/$(PACKAGE_NAME)
 
+PROPS_VERSION := 0.2.0
+JQ_VERSION := 1.5
+ARGBASH_VERSION := 2.7.1
+PROPS_DOWNLOAD_URL := https://github.com/oconnormi/props/releases/download/v$(PROPS_VERSION)/props_linux_amd64 
+JQ_DOWNLOAD_URL := https://github.com/stedolan/jq/releases/download/jq-$(JQ_VERSION)/jq-linux64
+ARGBASH_DOWNLOAD_URL := https://github.com/matejak/argbash/archive/$(ARGBASH_VERSION).tar.gz
+
 environment_sources := $(wildcard environment/*.env)
 environment_targets := $(patsubst environment/%.env, $(ARCHIVE_PREP_DIR)/environment/%.env, $(environment_sources))
 current_environment_source = $(patsubst $(ARCHIVE_PREP_DIR)/environment/%.env, environment/%.env, $@)
@@ -49,7 +56,7 @@ package: dependencies prepare ## Package the project output into an archive
 	@echo "Building..."
 
 .PHONY: prepare 
-prepare: tools $(ARCHIVE_PREP_DIR) $(environment_targets) $(library_targets) $(argbash_targets) ## Prepares for packaging
+prepare: tools $(ARCHIVE_PREP_DIR) $(environment_targets) $(library_targets) $(argbash_targets) $(ARCHIVE_PREP_DIR)/bin/jq $(ARCHIVE_PREP_DIR)/bin/props ## Prepares for packaging
 	@echo "Preparing..."
 
 .PHONY: dependencies
@@ -66,12 +73,12 @@ $(BINARY_CACHE): $(CACHE_DIR)
 	@mkdir -p $@
 
 $(BINARY_CACHE)/props: $(BINARY_CACHE)
-	@wget -N -O $@ https://github.com/oconnormi/props/releases/download/v0.2.0/props_linux_amd64
+	@wget -N -O $@ $(PROPS_DOWNLOAD_URL)
 	@touch $@
 	@chmod 755 $@
 
 $(BINARY_CACHE)/jq: $(BINARY_CACHE)
-	@wget -N -O $@ https://github.com/stedolan/jq/releases/download/jq-1.5/jq-linux64 
+	@wget -N -O $@ $(JQ_DOWNLOAD_URL)
 	@touch $@
 	@chmod 755 $@
 
@@ -83,14 +90,14 @@ $(TOOLS_DIR)/argbash: $(CACHE_DIR)/argbash.tar.gz $(TOOLS_DIR)
 	@tar xzf $< -C $@ --strip-components=1
 
 $(CACHE_DIR)/argbash.tar.gz: $(CACHE_DIR)
-	@wget -N -O $@ https://github.com/matejak/argbash/archive/2.7.1.tar.gz
+	@wget -N -O $@ $(ARGBASH_DOWNLOAD_URL) 
 	@touch $@
 
 $(BUILD_DIR):
 	@mkdir -p $@
 
 $(BUILD_PREP_DIR): $(BUILD_DIR)
-	@mkdir -p $@:
+	@mkdir -p $@
 
 $(BUILD_PACKAGES_DIR): $(BUILD_DIR)
 	@mkdir -p $@
@@ -127,4 +134,16 @@ $(ARGBASH_PREP_DIR): $(BUILD_DIR)
 $(argbash_targets): %: $(ARCHIVE_PREP_DIR)/bin $(TOOLS_DIR)/argbash
 	@echo "Building Argbash Template $(current_argbash_source) as $@"
 	@$(ARGBASH) $(current_argbash_source) -o $@
+	@touch $@
+
+$(ARCHIVE_PREP_DIR)/bin/jq: $(BINARY_CACHE)/jq $(ARCHIVE_PREP_DIR)
+	@echo "Copying jq from $< to $@"
+	@cp $< $@
+	@chmod 755 $@
+	@touch $@
+
+$(ARCHIVE_PREP_DIR)/bin/props: $(BINARY_CACHE)/props $(ARCHIVE_PREP_DIR)
+	@echo "Copying props from $< to $@"
+	@cp $< $@
+	@chmod 755 $@
 	@touch $@
