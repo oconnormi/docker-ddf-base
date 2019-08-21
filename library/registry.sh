@@ -1,7 +1,5 @@
 #!/bin/bash
 
-source ${ENTRYPOINT_HOME}/global_env.sh
-
 # Format for REGISTRY should be REGISTRY=<url>|<name>|<type>|<push>|<pull>|<auto-push>|<username>|<password>,...
 function registry {
     IFS=',' read -r -a _registry_list <<< "${REGISTRY}"

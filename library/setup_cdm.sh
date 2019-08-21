@@ -1,7 +1,5 @@
 #!/bin/bash
 
-source ${ENTRYPOINT_HOME}/global_env.sh
-
 # $CDM can contain multiple configs of the form
 # <directory>|<processing_mechanism>|<threads>|<readlock>,<directory>|....
 function main {

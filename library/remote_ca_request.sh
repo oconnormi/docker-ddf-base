@@ -1,8 +1,6 @@
 #!/bin/bash
 
 # Requests a certificate from a remote CFSSL based CA
-source ${ENTRYPOINT_HOME}/certs_env.sh
-
 _tmp_cert_dir=/tmp/ca_remote_request
 _tmp_output_dir=${_tmp_cert_dir}/out
 mkdir -p ${_tmp_output_dir}

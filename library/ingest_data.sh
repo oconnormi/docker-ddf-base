@@ -1,7 +1,5 @@
 #!/bin/bash
 
-source ${ENTRYPOINT_HOME}/global_env.sh
-
 # Two params
 # $1: Path to metadata directory
 # $2: Transformer

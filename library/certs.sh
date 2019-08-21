@@ -1,8 +1,6 @@
 #!/bin/bash
 
 # Generate certs
-source $ENTRYPOINT_HOME/certs_env.sh
-
 # Check if already complete
 keytool -list -alias $_keyAlias $_keytoolOpts > /dev/null 2>&1
 if [ $? -ne 0 ] ; then

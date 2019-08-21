@@ -1,7 +1,5 @@
 #!/bin/bash
 
-source ${ENTRYPOINT_HOME}/global_env.sh
-
 echo -n "Waiting for log file: ${APP_LOG} to be created..."
 while [ ! -f ${APP_LOG} ]
 do

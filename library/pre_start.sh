@@ -1,7 +1,5 @@
 #!/bin/bash
 
-source ${ENTRYPOINT_HOME}/global_env.sh
-
 # Prepare Certs
 ${ENTRYPOINT_HOME}/certs.sh
 
