@@ -38,27 +38,27 @@ fi
 # TODO: add more fine grained ldap configuration support
 if [ -n "$LDAP_HOST" ]; then
   echo "Copying LDAP configs"
-  cp $ENTRYPOINT_HOME/config/ldap/*.config ${_app_etc}
+  cp $LIBRARY_HOME/config/ldap/*.config ${_app_etc}
 fi
 
 if [ -n "$INGEST_DATA" ]; then
-  $ENTRYPOINT_HOME/ingest_data.sh
+  $LIBRARY_HOME/ingest_data.sh
 fi
 
 if [ -n "$SEED_CONTENT" ]; then
-  $ENTRYPOINT_HOME/seed_content.sh
+  $LIBRARY_HOME/seed_content.sh
 fi
 
 if [ -n "$CDM" ]; then
-  $ENTRYPOINT_HOME/setup_cdm.sh
+  $LIBRARY_HOME/setup_cdm.sh
 fi
 
 if [ -n "$REGISTRY" ]; then
-    $ENTRYPOINT_HOME/registry.sh
+    $LIBRARY_HOME/registry.sh
 fi
 
-if [ -d "$ENTRYPOINT_HOME/post" ]; then
-  for f in "$ENTRYPOINT_HOME/post/*";
+if [ -d "$LIBRARY_HOME/post" ]; then
+  for f in "$LIBRARY_HOME/post/*";
     do
       if [ $UID = 0 ]; then
        chmod 755 $f
@@ -70,17 +70,17 @@ if [ -d "$ENTRYPOINT_HOME/post" ]; then
     done;
 fi
 
-echo "To run additional post_start configurations mount a script to ${ENTRYPOINT_HOME}/post_start_custom.sh"
+echo "To run additional post_start configurations mount a script to ${LIBRARY_HOME}/post_start_custom.sh"
 
-if [ -e "${ENTRYPOINT_HOME}/post_start_custom.sh" ]; then
+if [ -e "${LIBRARY_HOME}/post_start_custom.sh" ]; then
   echo "Post-Start Custom Configuration Script found, running now..."
   if [ $UID = 0 ]; then
-    chmod 755 ${ENTRYPOINT_HOME}/post_start_custom.sh
+    chmod 755 ${LIBRARY_HOME}/post_start_custom.sh
   else
-    sudo chmod 755 ${ENTRYPOINT_HOME}/post_start_custom.sh
+    sudo chmod 755 ${LIBRARY_HOME}/post_start_custom.sh
   fi
   sleep 1
-  ${ENTRYPOINT_HOME}/post_start_custom.sh
+  ${LIBRARY_HOME}/post_start_custom.sh
 fi
 
 if [ ! "${SSH_ENABLED}" = true ]; then

@@ -70,7 +70,7 @@ build: package test ## Build and test the entrypoint
 package: dependencies prepare $(ARCHIVE_OUTPUT) ## Package the project output into an archive
 
 .PHONY: test
-test: argbash-templates/tests ## Run Tests
+test: argbash-templates/tests tests ## Run Tests
 
 .PHONY: argbash-templates/tests
 argbash-templates/tests: $(ARCHIVE_OUTPUT) ## Test Argbash Templates

@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Initialize ENTRYPOINT_HOME
-export ENTRYPOINT_HOME=""
-export ENTRYPOINT_LIBRARY=""
+ENTRYPOINT_HOME=""
+ENTRYPOINT_LIBRARY=""
 ENTRYPOINT_ENV_LIBRARY=""
 ENTRYPOINT_BIN=""
 
@@ -62,9 +62,9 @@ function entrypoint {
   echo "Starting ${APP_NAME}"
   
   if [ -n "$HTTPS_PORT" ] && [ "$HTTPS_PORT" -lt "1024" ] && [ $EUID -ne 0 ]; then
-    sudo -E $APP_HOME/bin/start
+    sudo $APP_HOME/bin/start
   else
-    $APP_HOME/bin/start
+    env -i $APP_HOME/bin/start
   fi
   
   sleep 2
@@ -85,10 +85,11 @@ function entrypoint {
 
 function main {
   initScriptDir $@
-  ENTRYPOINT_LIBRARY=${ENTRYPOINT_HOME}/library
-  ENTRYPOINT_ENV_LIBRARY=${ENTRYPOINT_HOME}/environment
-  ENTRYPOINT_BIN=${ENTRYPOINT_HOME}/bin
-  PATH=${ENTRYPOINT_BIN}:${PATH}
+  export ENTRYPOINT_HOME
+  export ENTRYPOINT_LIBRARY=${ENTRYPOINT_HOME}/library
+  export ENTRYPOINT_ENV_LIBRARY=${ENTRYPOINT_HOME}/environment
+  export ENTRYPOINT_BIN=${ENTRYPOINT_HOME}/bin
+  export PATH=${ENTRYPOINT_BIN}:${PATH}
   initEnvironment $@
   entrypoint $@
 }

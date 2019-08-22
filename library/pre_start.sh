@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Prepare Certs
-${ENTRYPOINT_HOME}/certs.sh
+${LIBRARY_HOME}/certs.sh
 
 props set ${_system_sitename_key} ${_system_sitename} ${_system_properties_file}
 props set ${_system_external_hostname_key} ${_system_external_hostname} ${_system_properties_file}
@@ -66,17 +66,17 @@ if [ "${SECURITY_MANAGER_DISABLED}" = true ]; then
 fi
 
 if [ -n "${SECURITY_PROFILE}" ]; then
-  ${ENTRYPOINT_HOME}/security_profile.sh
+  ${LIBRARY_HOME}/security_profile.sh
 fi
 
 # Copy any existing configuration files before starting the container
-if [ -d "$ENTRYPOINT_HOME/pre_config" ]; then
-  echo "Copying configuration files from ${ENTRYPOINT_HOME}/pre_config to ${APP_HOME}"
-  cp -r ${ENTRYPOINT_HOME}/pre_config/* ${APP_HOME}
+if [ -d "$LIBRARY_HOME/pre_config" ]; then
+  echo "Copying configuration files from ${LIBRARY_HOME}/pre_config to ${APP_HOME}"
+  cp -r ${LIBRARY_HOME}/pre_config/* ${APP_HOME}
 fi
 
-if [ -d "$ENTRYPOINT_HOME/pre" ]; then
-  for f in "$ENTRYPOINT_HOME/pre/*";
+if [ -d "$LIBRARY_HOME/pre" ]; then
+  for f in "$LIBRARY_HOME/pre/*";
     do
       if [ $UID = 0 ]; then
         chmod 755 $f
@@ -91,25 +91,25 @@ fi
 # Enable SSH endpoint
 sed -i 's/#sshPort=8101/sshPort=8101/' ${_karaf_shell_config_file}
 
-echo "To run additional pre_start configurations mount a script to ${ENTRYPOINT_HOME}/pre_start_custom.sh"
+echo "To run additional pre_start configurations mount a script to ${LIBRARY_HOME}/pre_start_custom.sh"
 
 if [ -n "$SOURCES" ]; then
-  ${ENTRYPOINT_HOME}/sources.sh
+  ${LIBRARY_HOME}/sources.sh
 fi
 
 if [ "${CATALOG_FANOUT_MODE}" = true ]; then
-  ${ENTRYPOINT_HOME}/fanout_mode.sh
+  ${LIBRARY_HOME}/fanout_mode.sh
 fi
 
-if [ -e "${ENTRYPOINT_HOME}/pre_start_custom.sh" ]; then
+if [ -e "${LIBRARY_HOME}/pre_start_custom.sh" ]; then
   echo "Pre-Start Custom Configuration Script found, running now..."
   if [ $UID = 0 ]; then
-    chmod 755 ${ENTRYPOINT_HOME}/pre_start_custom.sh
+    chmod 755 ${LIBRARY_HOME}/pre_start_custom.sh
   else
-    sudo chmod 755 ${ENTRYPOINT_HOME}/pre_start_custom.sh
+    sudo chmod 755 ${LIBRARY_HOME}/pre_start_custom.sh
   fi
   sleep 1
-  ${ENTRYPOINT_HOME}/pre_start_custom.sh
+  ${LIBRARY_HOME}/pre_start_custom.sh
 fi
 
 # Deprecated ENV Vars

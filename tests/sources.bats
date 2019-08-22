@@ -6,6 +6,7 @@ function setup {
     export PATH=${ENTRYPOINT_HOME}/bin:${PATH}
     export APP_HOME=${BATS_TMPDIR}
     mkdir -p ${APP_HOME}/etc
+    source ${ENTRYPOINT_HOME}/environment/*.env
 }
 
 function teardown() {
