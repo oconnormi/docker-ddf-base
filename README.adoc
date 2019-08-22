@@ -9,11 +9,12 @@ endif::[]
 :toc:
 :toc-placement!:
 
-toc::[]
 
 = DDF Base
 
 Entrypoint scripts for booting and configuring ddf based distributions. Intended to be packaged in container and vm images.
+
+toc::[]
 
 [IMPORTANT]
 ====
