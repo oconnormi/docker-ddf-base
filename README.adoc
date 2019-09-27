@@ -29,24 +29,22 @@ This repo has been re-organized to have a single version of the entrypoint scrip
 
 == Usage Requirements
 
-This image is meant to be the basis for any ddf based image.
+These scripts are meant to be used as the entrypoint for any for any ddf based image.
 It packages the dependencies and an entrypoint script for use with any ddf based application
 
-Any downstream containers must provide environment variables for:
+There are some minimal requirements for using this entrypoint script within an image.
+
+=== Environment Variables
 
 * APP_NAME - Name of application, used for branding by the entrypoint
 * APP_HOME - Home Directory for application installation (should have a bin directory as a child)
 * APP_LOG - Location of the application log file
 
-```Dockerfile
-FROM codice/ddf-base
+=== Packages
 
-ENV APP_NAME=<app_name>
-ENV APP_HOME=<app_home>
-ENV APP_LOG=<log_file>
-...
-# Install application
-```
+* curl
+* openssl
+
 == Features
   * Oracle JDK8
   * https://stedolan.github.io/jq/[jq] for processing json
@@ -59,14 +57,14 @@ ENV APP_LOG=<log_file>
 
 == Extending
 
-All the steps performed by the scripts in this image are broken down into two categories, `pre-start` and `post-start`.
+All the steps performed by these scripts are broken down into two categories, `pre-start` and `post-start`.
 Pre-start steps are all performed prior to the ddf instance being started, while post-start steps are all performed after the ddf instance is started.
 
 Both of these sets of steps can be extended easily using the following methods.
 
 === Customizing Readiness Check
 
-There are a few protections in place in this image to help get timings right when performing installations. The default approach checks if all bundles are started before considering the system "ready"
+There are a few protections in place in these scripts to help get timings right when performing installations. The default approach checks if all bundles are started before considering the system "ready"
 By default there are a few bundles that are excluded from this check. These defaults can be overriden via the `READINESS_EXCLUSIONS` environment variable
 
 The default exclusions are: 
@@ -208,11 +206,6 @@ Certificates can be imported at runtime by passing the certificate chain in the 
 <CA_CERT>
 -----END CERTIFICATE-----
 ```
-
-[WARNING] 
-====
-This should not be used in a production environment as it is insecure. Anyone with access to the docker daemon will be able to retrieve this from the environment.
-====
 
 ==== Remote CA Support
 
@@ -392,7 +385,7 @@ To switch the behavior of the catalog to use fanout mode provide `CATALOG_FANOUT
 
 ==== Extending
 
-By default the base image only supports `CSW` type registries.
+By default these scripts only support `CSW` type registries.
 To support other registry types add a template to `$ENTRYPOINT_HOME/templates/registry/`.
 Templates should be named: `<name>.template`
 
