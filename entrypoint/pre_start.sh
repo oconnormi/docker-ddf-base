@@ -99,6 +99,10 @@ if [ -n "$SOURCES" ]; then
   ${ENTRYPOINT_HOME}/sources.sh
 fi
 
+if [ -n "$REMOTE_SOURCES" ]; then
+  ${ENTRYPOINT_HOME}/remote_sources.sh
+fi
+
 if [ "${CATALOG_FANOUT_MODE}" = true ]; then
   ${ENTRYPOINT_HOME}/fanout_mode.sh
 fi
