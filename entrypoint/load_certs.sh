@@ -28,6 +28,19 @@ function writeTempCert {
   fi
 }
 
+function removeKeyPass {
+  pushd ${_tmp_cert_dir}
+  awk '
+    split_after == 1 {n++;split_after=0}
+    /-----END RSA PRIVATE KEY-----/ {split_after=1}
+    {print > "prep" n ".pem"}' < ${_tmp_cert}
+
+  echo "${SSL_KEY_PASS}" > ssl_key_pass
+  openssl rsa -in prep.pem -out prep.pem -passin file:ssl_key_pass
+  cat prep.pem prep1.pem > cert.pem 
+  popd
+}
+
 function validateCert {
   if [ ! -f ${_tmp_cert} ]; then
     return 2
@@ -134,6 +147,10 @@ function main {
   if [ $? -ne 0 ]; then
     echo -e "Provided certificate didn't meet requirements.\n\t'SSL_CERT must contain (in this order)\n\t\t-----BEGIN RSA PRIVATE KEY-----\n\t\t<KEY>\n\t\t-----END RSA PRIVATE KEY-----\n\t\t-----BEGIN CERTIFICATE-----\n\t\t<CERT>\n\t\t-----END CERTIFICATE-----\n\t\t-----BEGIN CERTIFICATE-----\n\t\t<CA_CERT>\n\t\t-----END CERTIFICATE-----"
     return 1
+  fi
+
+  if [ -n "$SSL_KEY_PASS" ]; then
+    removeKeyPass
   fi
 
   createP12
