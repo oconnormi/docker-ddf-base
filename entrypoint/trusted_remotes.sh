@@ -3,7 +3,7 @@
 source ${ENTRYPOINT_HOME}/global_env.sh
 source ${ENTRYPOINT_HOME}/certs_env.sh
 
-_tmp_cert_dir=/tmp/remote_certs
+_tmp_cert_dir=/tmp/trusted_remotes
 mkdir -p ${_tmp_cert_dir}
 
 importTrust() {
@@ -41,13 +41,13 @@ get_certs() {
     importTrust $1
 }
 
-# Remote sources, passed in the form of 
+# Trusted remote sources, passed in the form of 
 # <url_1>|<url_2>|...
 function sources {
     _number_of_sources=0
 
-    IFS='|' read -r -a _remote_sources <<< "${REMOTE_SOURCES}"
-    for _url in "${_remote_sources[@]}"
+    IFS='|' read -r -a _trusted_remotes <<< "${TRUSTED_REMOTES}"
+    for _url in "${_trusted_remotes[@]}"
     do
         port="$(echo ${_url} | sed -e 's,^.*:,:,g' -e 's,.*:\([0-9]*\).*,\1,g' -e 's,[^0-9],,g')"
 
