@@ -13,6 +13,7 @@ echo -e "\nLog file found, continuing..."
 waitForReady
 
 if [ -n "$INSTALL_PROFILE" ]; then
+  echo "Installing $INSTALL_PROFILE profile. This may take some time..." 
   ${_client} profile:install ${INSTALL_PROFILE}
   waitForReady
 fi
@@ -57,6 +58,11 @@ fi
 
 if [ -n "$REGISTRY" ]; then
     $ENTRYPOINT_HOME/registry.sh
+fi
+
+if [ -n "$DISABLE_IDP" ]; then
+    echo "Disabling IdP"
+    $ENTRYPOINT_HOME/disable_idp.sh
 fi
 
 if [ -d "$ENTRYPOINT_HOME/post" ]; then

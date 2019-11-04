@@ -21,6 +21,7 @@ _setenv_file=${_app_bin}/setenv
 _server_keystore_file=${_app_keystores}/serverKeystore.jks
 _server_truststore_file=${_app_keystores}/serverTruststore.jks
 _idp_client_config_file=${_app_etc}/org.codice.ddf.security.idp.client.IdpMetadata.config
+_policy_manager_config_file=${_app_etc}/org.codice.ddf.security.policy.context.impl.PolicyManager
 #####################################
 
 ###### Source Configuration Properties ######
@@ -55,6 +56,8 @@ _system_external_context=${EXTERNAL_CONTEXT:=${_default_external_context}}
 
 _system_sitename=${SITE_NAME:=${_system_external_hostname}}
 
+_ws_security_subject_constraint=ws-security.subject.cert.constraints
+
 # Solr
 _solr_client_key="solr.client"
 _solr_http_url_key="solr.http.url"
@@ -70,6 +73,9 @@ _idp_service_pid_key="service.pid"
 _idp_service_pid_value="org.codice.ddf.security.idp.client.IdpMetadata"
 _idp_useragent_key="userAgentCheck"
 _idp_useragent_value="true"
+
+# Policy Manager
+_policy_manager_config_name=org.codice.ddf.security.policy.context.impl.PolicyManager
 ####################################
 
 ###### Client Settings ######
