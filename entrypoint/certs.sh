@@ -21,3 +21,9 @@ if [ $? -ne 0 ] ; then
     $ENTRYPOINT_HOME/local_ca_request.sh
   fi
 fi
+
+_cn_filter=".*$(keytool ${_keytoolOpts} -list -alias ${_system_internal_hostname} -v 2> /dev/null | grep -io CN=.* | head -n 1 | cut -d, -f 1).*"
+
+echo "Updating Security Subject Cert Constraints to ${_cn_filter}"
+
+props set ${_ws_security_subject_constraint} ${_cn_filter} ${_system_properties_file}

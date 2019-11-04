@@ -10,13 +10,11 @@ do
 done
 echo -e "\nLog file found, continuing..."
 
-echo "Waiting for system readiness..."
 waitForReady
 
 if [ -n "$INSTALL_PROFILE" ]; then
   echo "Installing $INSTALL_PROFILE profile. This may take some time..." 
   ${_client} profile:install ${INSTALL_PROFILE}
-  echo "Waiting for system readiness..."
   waitForReady
 fi
 

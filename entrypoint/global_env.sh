@@ -56,6 +56,8 @@ _system_external_context=${EXTERNAL_CONTEXT:=${_default_external_context}}
 
 _system_sitename=${SITE_NAME:=${_system_external_hostname}}
 
+_ws_security_subject_constraint=ws-security.subject.cert.constraints
+
 # Solr
 _solr_client_key="solr.client"
 _solr_http_url_key="solr.http.url"
