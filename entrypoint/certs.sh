@@ -26,4 +26,4 @@ _cn_filter=".*$(keytool ${_keytoolOpts} -list -alias ${_system_internal_hostname
 
 echo "Updating Security Subject Cert Constraints to ${_cn_filter}"
 
-props set ${_ws_security_subject_constraint} ${_cn_filter} ${_system_properties_file}
+props set "${_ws_security_subject_constraint}" "${_cn_filter}" ${_system_properties_file}
