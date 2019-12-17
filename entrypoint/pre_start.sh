@@ -100,7 +100,14 @@ if [ -n "$SOURCES" ]; then
 fi
 
 if [ -n "$TRUSTED_REMOTES" ]; then
+  echo "Adding trusted remotes..."
   ${ENTRYPOINT_HOME}/trusted_remotes.sh
+fi
+
+if [ "${LOAD_LOCAL_CERTS}" = true ]; then
+  echo "Loading certs..."
+  ${ENTRYPOINT_HOME}/load_local_certs.sh
+
 fi
 
 if [ "${CATALOG_FANOUT_MODE}" = true ]; then

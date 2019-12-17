@@ -6,7 +6,7 @@ source ${ENTRYPOINT_HOME}/certs_env.sh
 _tmp_cert_dir=/tmp/trusted_remotes
 mkdir -p ${_tmp_cert_dir}
 
-importTrust() {
+function importTrust() {
     # imports certificates into trust store
 
     echo "attempting to import $1"
@@ -26,7 +26,7 @@ importTrust() {
     fi
 }
 
-get_certs() {
+function get_certs() {
     # fetch certs from source
 
     file=${_tmp_cert_dir}/${1}.pem
