@@ -48,8 +48,6 @@ function teardown() {
     run $ENTRYPOINT_HOME/registry.sh
 
     file_count=$(ls -1 ${APP_HOME}/etc | wc -l)
-    echo "file count: ${file_count}" >&3
-    echo "Output: ${output}" >&3
 
     [ "$status" -eq 0 ]
     [ "$file_count" -eq 2 ]

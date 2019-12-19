@@ -99,6 +99,11 @@ if [ -n "$SOURCES" ]; then
   ${ENTRYPOINT_HOME}/sources.sh
 fi
 
+if [ -n "$LOCAL_CERTS_DIR" ]; then
+  echo -e "\nChecking certificates directory..."
+  ${ENTRYPOINT_HOME}/load_local_certs.sh
+fi
+
 if [ -n "$TRUSTED_REMOTES" ]; then
   ${ENTRYPOINT_HOME}/trusted_remotes.sh
 fi
