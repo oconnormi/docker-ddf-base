@@ -58,17 +58,7 @@ function teardown() {
     cp -R $test_certs_dir/bad.pem $LOCAL_CERTS_DIR
 
     run $ENTRYPOINT_HOME/load_local_certs.sh >&3
-
-    [[ "$output" = *"Failed to import bad"* ]]
-}
-
-@test "valid and invalid certs" {   
-    cp -R $test_certs_dir/*.pem $LOCAL_CERTS_DIR
-
-    run $ENTRYPOINT_HOME/load_local_certs.sh >&3
-
-    [[ "$output" = *"Failed to import bad"* ]]
-    [[ "$output" = *"2 certificate(s) imported"* ]]
+    [[ "$output" = *"Failed to import /tmp/random_dir/bad.pem" ]]
 }
 
 @test "non .pem files" {   

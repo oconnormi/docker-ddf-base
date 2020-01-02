@@ -102,10 +102,22 @@ fi
 if [ -n "$LOCAL_CERTS_DIR" ]; then
   echo -e "\nChecking certificates directory..."
   ${ENTRYPOINT_HOME}/load_local_certs.sh
+  _certs_success=$?
+
+  if [ "${_certs_success}" -eq 1 ]; then
+    echo "Failed to import local certificate file(s)"
+    exit 1
+  fi
 fi
 
 if [ -n "$TRUSTED_REMOTES" ]; then
   ${ENTRYPOINT_HOME}/trusted_remotes.sh
+  _remotes_success=$?
+
+  if [ "${_remotes_success}" -eq 1 ]; then
+    echo "Failed to add trusted remote sources"
+    exit 1
+  fi
 fi
 
 if [ "${CATALOG_FANOUT_MODE}" = true ]; then

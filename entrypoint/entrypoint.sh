@@ -9,6 +9,11 @@ if [ -e "${ENTRYPOINT_HOME}/pre_start.sh" ]; then
   fi
   sleep 1
   ${ENTRYPOINT_HOME}/pre_start.sh
+  _success=$?
+
+  if [ "${_success}" -eq 1 ]; then
+    exit 1
+  fi
 fi
 
 echo "Starting ${APP_NAME}"

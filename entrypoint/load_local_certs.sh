@@ -25,10 +25,8 @@ importIntoTrust() {
                 _total_certs_imported=$((_total_certs_imported+1))
 
             else
-                echo "Failed to import ${filename}"
-                # not sure if the function should exit here. 
-                # return 1
-
+                echo "Failed to import ${file}"
+                return 1
             fi
         done
 
@@ -38,7 +36,6 @@ importIntoTrust() {
     else
         echo "Invalid directory: ${LOCAL_CERTS_DIR}"
         return 1
-
     fi
 }
 
