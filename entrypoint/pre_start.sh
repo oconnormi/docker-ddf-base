@@ -103,6 +103,8 @@ if [ -n "$TRUSTED_REMOTES" ]; then
   ${ENTRYPOINT_HOME}/trusted_remotes.sh
 fi
 
+${ENTRYPOINT_HOME}/trust_certs.sh
+
 if [ "${CATALOG_FANOUT_MODE}" = true ]; then
   ${ENTRYPOINT_HOME}/fanout_mode.sh
 fi
