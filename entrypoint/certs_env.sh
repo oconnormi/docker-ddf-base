@@ -17,5 +17,5 @@ if [ -n "$APP_NODENAME" ]; then
 fi
 
 if [ -n "$CSR_SAN" ]; then
-  _san+=${CSR_SAN}
+  _san+=",${CSR_SAN}"
 fi
