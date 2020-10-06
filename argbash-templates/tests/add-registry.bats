@@ -2,6 +2,7 @@
 
 function setup {
     export ENTRYPOINT_HOME=/opt/entrypoint
+    export PATH=${ENTRYPOINT_HOME}/bin:${PATH}
     export APP_HOME=${BATS_TMPDIR}
     mkdir -p ${APP_HOME}/etc
 }

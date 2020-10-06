@@ -1,8 +1,5 @@
 #!/bin/bash
 
-source ${ENTRYPOINT_HOME}/global_env.sh
-source ${ENTRYPOINT_HOME}/certs_env.sh
-
 _trusted_certs_dir="/trusted_certs"
 
 function importTrustStore {

@@ -1,7 +1,5 @@
 #!/bin/bash
 
-source ${ENTRYPOINT_HOME}/global_env.sh
-
 # DDF Catalog sources, passed in the form of 
 # <source_type>|<source_name>|<url>|<username>|<password>,<source_type>|...
 function sources {

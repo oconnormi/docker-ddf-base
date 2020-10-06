@@ -1,5 +1,4 @@
 #!/bin/bash
-source ${ENTRYPOINT_HOME}/global_env.sh
 
 _catalog_framework_config=${_app_etc}/ddf.catalog.CatalogFrameworkImpl.config
 

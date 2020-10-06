@@ -1,7 +1,5 @@
 #!/bin/bash
 
-source ${ENTRYPOINT_HOME}/certs_env.sh
-
 _subject="/C=US/ST=AZ/L=Hursley/O=DDF/OU=Dev/CN=${_system_external_hostname}"
 _serial=$(cat /dev/urandom | tr -dc '0-9' | fold -w 16 | head -n 1)
 

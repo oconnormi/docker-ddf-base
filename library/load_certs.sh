@@ -1,7 +1,5 @@
 #!/bin/bash
 
-source ${ENTRYPOINT_HOME}/certs_env.sh
-
 _tmp_cert_dir=/tmp/load_certs
 _tmp_output_dir=${_tmp_cert_dir}/out
 mkdir -p ${_tmp_output_dir}

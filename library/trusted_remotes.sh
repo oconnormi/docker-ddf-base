@@ -1,8 +1,5 @@
 #!/bin/bash
 
-source ${ENTRYPOINT_HOME}/global_env.sh
-source ${ENTRYPOINT_HOME}/certs_env.sh
-
 _tmp_cert_dir=/tmp/trusted_remotes
 mkdir -p ${_tmp_cert_dir}
 

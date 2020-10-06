@@ -1,7 +1,5 @@
 #!/bin/bash
 
-source ${ENTRYPOINT_HOME}/global_env.sh
-
 _user=admin
 _pass=$(grep "${_user} =" ${_users_properties_file} | cut -d '=' -f 2 | cut -d ',' -f 1 | awk '{$1=$1};1')
 
