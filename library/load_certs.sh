@@ -5,8 +5,11 @@ _tmp_output_dir=${_tmp_cert_dir}/out
 mkdir -p ${_tmp_output_dir}
 
 _tmp_cert=${_tmp_cert_dir}/cert.pem
+_tmp_key=${_tmp_cert_dir}/key.pem
+_tmp_ca=${_tmp_cert_dir}/ca.pem
 _tmp_p12=${_tmp_output_dir}/cert.p12
-_tmp_ca=${_tmp_output_dir}/ca.pem
+_tmp_key_pass=${_tmp_cert_dir}/ssl_key_pass
+_tmp_chain=${_tmp_cert_dir}/chain.pem
 
 function checkIfAlreadyDone {
   keytool -list -alias "${_keyAlias}" ${_keytoolOpts} > /dev/null 2>&1
@@ -18,25 +21,31 @@ function writeTempCert {
     return 2
   fi
 
+  if [ ! -n "${SSL_KEY}" ]; then
+    return 2
+  fi
+
+  if [ ! -n "${SSL_CA_BUNDLE}" ]; then
+    return 2
+  fi
+
   echo "${SSL_CERT}" > "${_tmp_cert}"
-  if [ -f ${_tmp_cert} ]; then
+  echo "${SSL_KEY}" > "${_tmp_key}"
+  echo "${SSL_CA_BUNDLE}" > "${_tmp_ca}"
+  if [ -f ${_tmp_cert} ] && [ -f ${_tmp_key} ] && [ -f ${_tmp_ca} ]; then
     return 0
   else
     return 1
   fi
 }
 
-function validateCert {
-  if [ ! -f ${_tmp_cert} ]; then
-    return 2
-  fi
-  _cert_count=$(cat ${_tmp_cert} | grep 'BEGIN CERTIFICATE' | wc -l)
-  _key_count=$(cat ${_tmp_cert} | grep 'BEGIN RSA PRIVATE KEY' | wc -l)
-  if [ "${_cert_count}" == "2" ] && [ "${_key_count}" == "1" ]; then
-    return 0
-  else
-    return 1
-  fi
+function removeKeyPass {
+  echo "${SSL_KEY_PASS}" > "${_tmp_key_pass}"
+  openssl rsa -in ${_tmp_key} -out ${_tmp_key} -passin file:${_tmp_key_pass}
+}
+
+function makeChain {
+  cat ${_tmp_key} ${_tmp_cert} ${_tmp_ca} > ${_tmp_chain}
 }
 
 function extractCA {
@@ -54,7 +63,7 @@ function createP12 {
   openssl pkcs12 \
           -export \
           -out ${_tmp_p12} \
-          -in ${_tmp_cert} \
+          -in ${_tmp_chain} \
           -passin pass:${_storepass} \
           -passout pass:${_storepass} > /dev/null 2>&1
 
@@ -128,11 +137,11 @@ function main {
     return 1
   fi
 
-  validateCert
-  if [ $? -ne 0 ]; then
-    echo -e "Provided certificate didn't meet requirements.\n\t'SSL_CERT must contain (in this order)\n\t\t-----BEGIN RSA PRIVATE KEY-----\n\t\t<KEY>\n\t\t-----END RSA PRIVATE KEY-----\n\t\t-----BEGIN CERTIFICATE-----\n\t\t<CERT>\n\t\t-----END CERTIFICATE-----\n\t\t-----BEGIN CERTIFICATE-----\n\t\t<CA_CERT>\n\t\t-----END CERTIFICATE-----"
-    return 1
+  if [ -n "$SSL_KEY_PASS" ]; then
+    removeKeyPass
   fi
+
+  makeChain 
 
   createP12
   if [ $? -ne 0 ]; then

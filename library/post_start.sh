@@ -11,6 +11,7 @@ echo -e "\nLog file found, continuing..."
 waitForReady
 
 if [ -n "$INSTALL_PROFILE" ]; then
+  echo "Installing $INSTALL_PROFILE profile. This may take some time..." 
   ${_client} profile:install ${INSTALL_PROFILE}
   waitForReady
 fi
@@ -55,6 +56,12 @@ fi
 
 if [ -n "$REGISTRY" ]; then
     $LIBRARY_HOME/registry.sh
+fi
+
+# TODO: check for correct ddf version
+if [ -n "$DISABLE_IDP" ]; then
+    echo "Disabling IdP"
+    $LIBRARY_HOME/disable_idp.sh
 fi
 
 if [ -d "$LIBRARY_HOME/post" ]; then

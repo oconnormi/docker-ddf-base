@@ -3,44 +3,44 @@
 # Prepare Certs
 ${LIBRARY_HOME}/certs.sh
 
-props set ${_system_sitename_key} ${_system_sitename} ${_system_properties_file}
-props set ${_system_external_hostname_key} ${_system_external_hostname} ${_system_properties_file}
-props set ${_system_external_https_port_key} ${_system_external_https_port} ${_system_properties_file}
-props set ${_system_external_http_port_key} ${_system_external_http_port} ${_system_properties_file}
-props set ${_system_https_port_key} ${_system_internal_https_port} ${_system_properties_file}
-props set ${_system_http_port_key} ${_system_internal_http_port} ${_system_properties_file}
-props set ${_system_hostname_key} ${_system_internal_hostname} ${_system_properties_file}
-props set ${_system_internal_context_key} ${_system_internal_context} ${_system_properties_file}
-props set ${_system_external_context_key} ${_system_external_context} ${_system_properties_file}
+props set "${_system_sitename_key}" "${_system_sitename}" "${_system_properties_file}"
+props set "${_system_external_hostname_key}" "${_system_external_hostname}" "${_system_properties_file}"
+props set "${_system_external_https_port_key}" "${_system_external_https_port}" "${_system_properties_file}"
+props set "${_system_external_http_port_key}" "${_system_external_http_port}" "${_system_properties_file}"
+props set "${_system_https_port_key}" "${_system_internal_https_port}" "${_system_properties_file}"
+props set "${_system_http_port_key}" "${_system_internal_http_port}" "${_system_properties_file}"
+props set "${_system_hostname_key}" "${_system_internal_hostname}" "${_system_properties_file}"
+props set "${_system_internal_context_key}" "${_system_internal_context}" "${_system_properties_file}"
+props set "${_system_external_context_key}" "${_system_external_context}" "${_system_properties_file}"
 
 if props get localhost ${_users_properties_file} > /dev/null ; then
   props del localhost ${_users_properties_file}
 fi
 if ! props get ${_system_internal_hostname} ${_users_properties_file} > /dev/null ; then
-  props set ${_system_internal_hostname} ${_system_user_privileges} ${_users_properties_file}
+  props set "${_system_internal_hostname}" "${_system_user_privileges}" "${_users_properties_file}"
 fi
 sed -i "s/localhost/$_system_internal_hostname/" ${_users_attributes_file}
 
 if [ -n "$SOLR_ZK_HOSTS" ]; then
   echo "Solr Cloud Support is enabled, zkhosts: $SOLR_ZK_HOSTS"
-  props set ${_solr_client_key} CloudSolrClient ${_system_properties_file}
+  props set "${_solr_client_key}" CloudSolrClient "${_system_properties_file}"
   props del ${_solr_http_url_key} ${_system_properties_file}
-  props set ${_solr_cloud_url_key} $SOLR_ZK_HOSTS ${_system_properties_file}
+  props set "${_solr_cloud_url_key}" "$SOLR_ZK_HOSTS" "${_system_properties_file}"
   props del ${_solr_data_key} ${_system_properties_file}
-  props set ${_solr_start_key} false ${_system_properties_file}
+  props set "${_solr_start_key}" false "${_system_properties_file}"
 fi
 
 if [ -n "$SOLR_URL" ]; then
   echo "Remote Solr Support is enabled, solr url: $SOLR_URL"
-  props set ${_solr_http_url_key} ${SOLR_URL} ${_system_properties_file}
-  props set ${_solr_start_key} false ${_system_properties_file}
+  props set "${_solr_http_url_key}" "${SOLR_URL}" "${_system_properties_file}"
+  props set "${_solr_start_key}" false "${_system_properties_file}"
 fi
 
 # TODO: add more fine grained ldap configuration support
 if [ -n "$LDAP_HOST" ]; then
   echo "Remote LDAP HOST: ${LDAP_HOST} configured"
-  props set ${_ldap_hostname_key} ${LDAP_HOST} ${_system_properties_file}
-  props set ${_ldap_port_key} ${_ldap_port} ${_system_properties_file}
+  props set "${_ldap_hostname_key}" "${LDAP_HOST}" "${_system_properties_file}"
+  props set "${_ldap_port_key}" "${_ldap_port}" "${_system_properties_file}"
 fi
 
 if [ -n "$IDP_URL" ]; then
@@ -48,9 +48,9 @@ if [ -n "$IDP_URL" ]; then
   if [ ! -f ${_idp_client_config_file} ]; then
     touch ${_idp_client_config_file}
   fi
-  props set ${_idp_metadata_key} ${IDP_URL} ${_idp_client_config_file}
-  props set ${_idp_service_pid_key} ${_idp_service_pid_value} ${_idp_client_config_file}
-  props set ${_idp_useragent_key} ${_idp_useragent_value} ${_idp_client_config_file}
+  props set "${_idp_metadata_key}" "${IDP_URL}" "${_idp_client_config_file}"
+  props set "${_idp_service_pid_key}" "${_idp_service_pid_value}" "${_idp_client_config_file}"
+  props set "${_idp_useragent_key}" "${_idp_useragent_value}" "${_idp_client_config_file}"
 fi
 
 if [ -n "$JAVA_MAX_MEM" ]; then
@@ -97,6 +97,12 @@ if [ -n "$SOURCES" ]; then
   ${LIBRARY_HOME}/sources.sh
 fi
 
+if [ -n "$TRUSTED_REMOTES" ]; then
+  ${ENTRYPOINT_HOME}/trusted_remotes.sh
+fi
+
+${ENTRYPOINT_HOME}/trust_certs.sh
+
 if [ "${CATALOG_FANOUT_MODE}" = true ]; then
   ${LIBRARY_HOME}/fanout_mode.sh
 fi
@@ -115,25 +121,25 @@ fi
 # Deprecated ENV Vars
 if [ -n "$HTTPS_PORT" ]; then
    echo "!WARNING! HTTPS_PORT env var is deprectated. Use 'INTERNAL_HTTPS_PORT'. Deprecated Env Vars will be removed in future versions" 
-   props set ${_system_https_port_key} ${HTTPS_PORT} ${_system_properties_file}
+   props set "${_system_https_port_key}" "${HTTPS_PORT}" "${_system_properties_file}"
 fi
 
 if [ -n "$HTTP_PORT" ]; then
   echo "!WARNING! 'HTTP_PORT' env var is deprecated. Use 'INTERNAL_HTTP_PORT'. Deprecated Env Vars will be removed in future versions"
-  props set ${_system_http_port_key} ${HTTP_PORT} ${_system_properties_file}
+  props set "${_system_http_port_key}" "${HTTP_PORT}" "${_system_properties_file}"
 fi
 
 if [ -n "$BASE_URL_HTTP_PORT" ]; then
   echo "!WARNING! 'BASE_URL_HTTP_PORT' env var is deprecated. Use 'EXTERNAL_HTTP_PORT'. Deprecated Env Vars will be removed in future versions"
-  props set ${_system_external_http_port} ${BASE_URL_HTTP_PORT} ${_system_properties_file}
+  props set "${_system_external_http_port}" "${BASE_URL_HTTP_PORT}" "${_system_properties_file}"
 fi
 
 if [ -n "$BASE_URL_HTTPS_PORT" ]; then
   echo "!WARNING! 'BASE_URL_HTTPS_PORT' env var is deprecated. Use 'EXTERNAL_HTTPS_PORT'. Deprecated Env Vars will be removed in future versions"
-  props set ${_system_external_https_port} ${BASE_URL_HTTPS_PORT} ${_system_properties_file}
+  props set "${_system_external_https_port}" "${BASE_URL_HTTPS_PORT}" "${_system_properties_file}"
 fi
 
 if [ -n "$EXTERNAL_URL" ]; then
   echo "!WARNING! 'EXTERNAL_URL' env var is deprecated. Use 'EXTERNAL_HOSTNAME'. Deprecated Env Vars will be removed in future versions"
-  props set ${_system_external_hostname_key} ${EXTERNAL_URL} ${_system_properties_file}
+  props set "${_system_external_hostname_key}" "${EXTERNAL_URL}" "${_system_properties_file}"
 fi
