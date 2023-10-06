@@ -1,11 +1,13 @@
 # Generate commands from argbash templates
-FROM matejak/argbash:2.7.1-1 as argbash
+FROM matejak/argbash:2.10.0 as argbash
 ADD "https://raw.githubusercontent.com/oconnormi/dev-tools/master/templates/ddf-create-cdm.m4" /work/create-cdm.m4
 COPY argbash-templates/* /work/
 RUN ./build.sh
 
 # Create base for final image
-FROM anapsix/alpine-java:8_jdk as base
+FROM alpine:3.18.4 as base
+RUN apk add libstdc++ curl ca-certificates bash java-cacerts unzip openjdk8
+ENV JAVA_HOME=/usr/lib/jvm/java-1.8-openjdk
 LABEL maintainer=oconnormi
 LABEL org.codice.application.type=ddf
 
